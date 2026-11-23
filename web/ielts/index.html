@@ -301,6 +301,183 @@ footer.site .wordmark b{color:#fff}
 .skills .card h3{display:flex;align-items:center;gap:10px}
 .skills .card h3 small{font-size:13px;font-weight:800;color:var(--orange-dk);background:var(--orange-tint);border-radius:999px;padding:2px 10px}
 </style>
+<!-- Structured data for search engines and AI assistants: organization, IELTS courses with prices and start date, FAQ. Keep prices/dates/FAQ in sync with the page. -->
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "EducationalOrganization",
+   "@id": "https://ammar-academy.com/#organization",
+   "name": "Ammar Academy",
+   "alternateName": [
+    "أكاديمية عمار",
+    "Ammar IELTS Academy",
+    "Ammar SAT Academy"
+   ],
+   "url": "https://ammar-academy.com/",
+   "logo": "https://ammar-academy.com/android-chrome-512x512.png",
+   "telephone": "+201080548078",
+   "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "63 ج، البوابة الأولى، حدايق الأهرام",
+    "addressLocality": "حدايق الأهرام",
+    "addressRegion": "الجيزة",
+    "addressCountry": "EG"
+   },
+   "sameAs": [
+    "https://www.facebook.com/ammar.academy",
+    "https://www.instagram.com/ammar.academy/",
+    "https://www.youtube.com/@Ammar-Academy",
+    "https://www.tiktok.com/@ammar.sat.academy"
+   ]
+  },
+  {
+   "@type": "WebPage",
+   "@id": "https://ammar-academy.com/ielts/#webpage",
+   "url": "https://ammar-academy.com/ielts/",
+   "name": "كورس الـIELTS — استفيد بحصة مجانية | Ammar IELTS Academy",
+   "inLanguage": "ar-EG",
+   "about": {
+    "@id": "https://ammar-academy.com/#organization"
+   },
+   "mainEntity": {
+    "@id": "https://ammar-academy.com/ielts/#courses"
+   }
+  },
+  {
+   "@type": "ItemList",
+   "@id": "https://ammar-academy.com/ielts/#courses",
+   "name": "كورسات الـIELTS في Ammar IELTS Academy",
+   "itemListElement": [
+    {
+     "@type": "ListItem",
+     "position": 1,
+     "item": {
+      "@type": "Course",
+      "@id": "https://ammar-academy.com/ielts/#full-course",
+      "name": "كورس الـIELTS الكامل",
+      "description": "تحضير الـIELTS للـ4 مهارات (Listening وReading وWriting وSpeaking) خلال 6 أسابيع: 30 حصة = 18 حصة Live على Zoom + 6 حصص متسجلة + 5 Mock Tests + Orientation Session، مع تصحيح خاص للـWriting والـSpeaking.",
+      "inLanguage": "ar",
+      "url": "https://ammar-academy.com/ielts/#pricing",
+      "provider": {
+       "@id": "https://ammar-academy.com/#organization"
+      },
+      "teaches": [
+       "IELTS Listening",
+       "IELTS Reading",
+       "IELTS Writing",
+       "IELTS Speaking"
+      ],
+      "offers": {
+       "@type": "Offer",
+       "category": "Paid",
+       "price": "3900",
+       "priceCurrency": "EGP",
+       "availability": "https://schema.org/InStock",
+       "url": "https://ammar-academy.com/ielts/"
+      },
+      "hasCourseInstance": {
+       "@type": "CourseInstance",
+       "courseMode": "Online",
+       "location": "Zoom",
+       "startDate": "2026-12-05",
+       "courseSchedule": {
+        "@type": "Schedule",
+        "duration": "P6W",
+        "repeatFrequency": "P1W",
+        "repeatCount": 6
+       },
+       "courseWorkload": "18 حصة Live على Zoom + 6 حصص متسجلة + 5 Mock Tests + Orientation Session (30 حصة)"
+      }
+     }
+    },
+    {
+     "@type": "ListItem",
+     "position": 2,
+     "item": {
+      "@type": "Course",
+      "@id": "https://ammar-academy.com/ielts/#private-course",
+      "name": "كورس الـIELTS الـPrivate (One to One)",
+      "description": "8 حصص تدريب فردي مع دكتور متخصص: تحديد مستواك واحتياجاتك، وخطة على قدّك، وتدريب على مهارات اختبار الـIELTS، والمواعيد بتتنسّق على وقتك.",
+      "inLanguage": "ar",
+      "url": "https://ammar-academy.com/ielts/#pricing",
+      "provider": {
+       "@id": "https://ammar-academy.com/#organization"
+      },
+      "teaches": [
+       "IELTS Listening",
+       "IELTS Reading",
+       "IELTS Writing",
+       "IELTS Speaking"
+      ],
+      "offers": {
+       "@type": "Offer",
+       "category": "Paid",
+       "price": "5900",
+       "priceCurrency": "EGP",
+       "availability": "https://schema.org/InStock",
+       "url": "https://ammar-academy.com/ielts/"
+      },
+      "hasCourseInstance": {
+       "@type": "CourseInstance",
+       "courseMode": "Online",
+       "courseWorkload": "8 حصص One to One"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "@id": "https://ammar-academy.com/ielts/#faq",
+   "inLanguage": "ar",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "الحصة المجانية دي إيه؟ وأحجزها إزاي؟",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "املا الفورم أو كلمنا على الواتساب، وفريقنا هيتواصل معاك يحدد ميعاد الحصة."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "الكورس Academic ولا General Training؟",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "الاتنين — الـListening والـSpeaking واحد، والفرق في الـReading والـWriting Task 1 وبنشتغل على النوع اللي انت محتاجه."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "الحصص بتكون إزاي؟",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "كل الحصص Live أونلاين على Zoom، وتحضر من أي مكان وتتفاعل مع المدرس مباشرة."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "لو فاتتني حصة؟",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "كل الحصص متسجلة، وتقدر ترجع لها تراجعها أو تعوّض أي جزء فاتك."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "مستوايا ضعيف، ينفع أبدأ؟",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "ابدأ بالـPlacement Test والاستشارة المجانية، وهنقولك الإنجليزي بتاعك مناسب للـIELTS ولا محتاج تبدأ منين."
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
 </head>
 <body id="top">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
