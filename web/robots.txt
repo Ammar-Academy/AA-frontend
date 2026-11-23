@@ -1,0 +1,27 @@
+# robots.txt for https://ammar-academy.com
+# Public marketing pages are open to every crawler, including AI search
+# crawlers (Googlebot, Bingbot, OAI-SearchBot, PerplexityBot, ClaudeBot).
+# Logged-in student areas and account pages are kept out of search results.
+
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /register
+Disallow: /forgotPassword
+Disallow: /profile
+Disallow: /profileSettings
+Disallow: /profileForgotPassword
+Disallow: /editProfile
+Disallow: /editPassword
+Disallow: /email/
+Disallow: /my-insights
+Disallow: /teacher-insights
+Disallow: /student-insights/
+Disallow: /notifications
+Disallow: /order-details/
+Disallow: /course-order/
+Disallow: /course/
+Disallow: /redirectToHome
+Disallow: /splash
+
+Sitemap: https://ammar-academy.com/sitemap.xml
