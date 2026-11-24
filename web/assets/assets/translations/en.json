@@ -112,6 +112,7 @@
       "prices": "Prices",
       "contact": "Contact Us",
       "real_tests": "Real Tests",
+      "vocabulary_game": "Vocabulary Game",
       "login": "Login",
       "hi": "Hi",
       "my_profile": "My profile",
@@ -144,7 +145,8 @@
       "title_part1": "Where Learning Meets ",
       "title_part2": "Progress",
       "description": "No confusion, no overload. Just well-structured courses that help you understand, apply, and grow with confidence.",
-      "see_courses": "See Courses"
+      "see_courses": "See Courses",
+      "play_vocabulary": "Play the Vocabulary Game"
     },
     "features": {
       "title": "Why Choose Us",
@@ -481,6 +483,9 @@
     "your_answer": "Your answer",
     "correct_answer": "Correct answer",
     "back_to_tests": "Back to Real Tests",
+    "ielts_title": "IELTS tests",
+    "ielts_description": "Practice or take a timed simulation on the exam screen. Your results are kept there.",
+    "ielts_open": "Open IELTS tests",
     "empty_state": "No real tests available yet",
     "empty_state_description": "New practice tests will appear here once your teacher publishes them.",
     "completed": "Completed",

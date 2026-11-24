@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0E0F3B">
+<title>IELTS tests | Ammar Academy</title>
+<link rel="icon" href="/favicon.ico">
+<!--
+  The IELTS exam screens: Reading and Listening. One file on purpose: nginx caches .js and .css for
+  a year, and this page has to be able to change. It talks to /api/ielts/ with
+  the site's own sign-in cookies.
+-->
+<style>
+@font-face{font-family:Poppins;src:url(/assets/assets/fonts/Poppins/Poppins-Regular.ttf);font-weight:400;font-display:swap}
+@font-face{font-family:Poppins;src:url(/assets/assets/fonts/Poppins/Poppins-SemiBold.ttf);font-weight:600;font-display:swap}
+:root{--navy:#0E0F3B;--orange:#F7931E;--ink:#17183a;--muted:#5b5f7a;--line:#dcdfe9;--bg:#f5f6fa;--card:#fff;--soft:#eceef7;--mark:#ffe29a;--ok:#1c7a4c;--bad:#b3322a;--size:16px;--font:Poppins,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}html,body{height:100%;margin:0}[hidden]{display:none!important}
+body{font:400 15px/1.55 var(--font);color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+h1,h2,h3,p{margin:0}a{color:var(--navy)}
+.btn{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:8px;padding:9px 16px;font-weight:600}
+.btn.main{background:var(--navy);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.small{padding:5px 11px;font-size:13.5px}
+.btn[aria-pressed=true]{background:var(--soft)}
+/* home */
+.home{max-width:980px;margin:0 auto;padding:28px 18px 60px;display:grid;gap:26px}
+.home header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.home h1{font-size:28px}.home h2{font-size:19px}
+.list{display:grid;gap:12px}.row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;gap:12px 20px;align-items:center;flex-wrap:wrap}.row>div:first-child{flex:1;min-width:210px}.row p{color:var(--muted);font-size:14px}.row .acts{display:flex;gap:8px;flex-wrap:wrap}
+.empty{color:var(--muted)}.score{font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+/* listening */
+.player{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:9px 14px;background:#fff;border-bottom:1px solid var(--line)}.player label{display:inline-flex;gap:6px;align-items:center;font-size:14px}.player input[type=range]{accent-color:var(--navy)}.player .seek{flex:1 1 180px;min-width:120px}.player .vol{width:90px}.player .time{font-variant-numeric:tabular-nums;white-space:nowrap}.player select{border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:#fff}.player progress{flex:1 1 160px;height:10px;accent-color:var(--navy)}
+.panes.one .text,.panes.one .divider{display:none}.panes.one .qs{padding-inline:max(22px,calc(50% - 400px))}
+/* exam */
+.exam{height:100%;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;gap:8px 14px;padding:8px 14px;background:var(--navy);color:#fff;flex-wrap:wrap}.bar .title{font-weight:600;flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .btn{background:transparent;color:#fff;border-color:#ffffff66}.bar .btn[aria-pressed=true]{background:#ffffff2e}
+.timer{font-weight:600;font-variant-numeric:tabular-nums;padding:4px 10px;border-radius:6px}.timer.warn{background:var(--orange);color:var(--navy)}
+.saved{font-size:13px;opacity:.85;min-width:76px}.saved.bad{color:#ffc2b8;opacity:1}
+.swap{display:none}
+.panes{flex:1;display:flex;min-height:0}.pane{overflow-y:auto;padding:22px;background:var(--card);min-width:0;font-size:var(--size)}
+.pane.text{width:var(--split,50%)}.pane.qs{flex:1}
+.divider{width:12px;flex:none;background:var(--line);cursor:col-resize;position:relative;touch-action:none;border:0;padding:0}.divider::after{content:"";position:absolute;left:5px;top:calc(50% - 18px);width:2px;height:36px;background:var(--muted)}
+.pane h2{font-size:1.25em;margin-bottom:.7em}.pane.text p.para{line-height:1.8;margin:0 0 1em}.pane img{max-width:100%;display:block}
+.pane.text{user-select:text;-webkit-user-select:text}
+mark{background:var(--mark);color:inherit;cursor:pointer;border-radius:2px}mark.noted{border-bottom:2px solid var(--orange)}
+.group{margin-bottom:34px}.group h3{font-size:1.02em}.ins{color:var(--muted);margin:2px 0 14px}
+.q{margin-bottom:18px;scroll-margin-top:16px}.qp{display:flex;gap:10px;align-items:flex-start}.qp>div{flex:1;min-width:0}
+.n{display:inline-grid;place-items:center;min-width:30px;height:26px;padding:0 5px;border:1px solid var(--muted);border-radius:6px;font-weight:600;font-size:13px;background:#fff;flex:none}
+.flag{border:0;background:none;padding:2px 6px;border-radius:6px;color:var(--muted);font-size:13px}.flag[aria-pressed=true]{color:var(--navy);background:#ffe6c7;font-weight:600}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;cursor:pointer}.opt:hover{background:var(--soft)}.opt input{margin-top:.28em;flex:none}.opts{margin-top:6px}.opts.inline{display:flex;flex-wrap:wrap;gap:2px 10px}
+input.a,select.a{border:1px solid var(--muted);border-radius:6px;padding:5px 9px;background:#fff;max-width:100%}input.a{width:11em}select.a{min-width:4.5em}
+.choices{list-style:none;margin:0 0 16px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;display:grid;gap:5px}.choices li{display:flex;gap:8px;padding:3px 6px;border-radius:6px}.choices li[draggable=true]{cursor:grab}.choices li.used{opacity:.5}.choices b{min-width:26px}
+.slot{display:flex;gap:8px;align-items:center;border:2px dashed var(--line);border-radius:8px;padding:6px 8px;margin-bottom:6px;scroll-margin-top:16px}.slot select{flex:1;min-width:0}.over{border-color:var(--orange)!important;background:#fff6ea}
+.rows{border-collapse:collapse;line-height:2.4;max-width:100%}.rows td{padding:3px 8px 3px 0;vertical-align:top}.rows.table{display:block;overflow-x:auto}.rows.table td{border:1px solid var(--line);padding:6px 12px}.rows.flow tr{display:block;margin-bottom:24px;position:relative}.rows.flow td{border:1px solid var(--muted);border-radius:8px;padding:6px 14px}.rows.flow tr+tr::before{content:"↓";position:absolute;top:-29px;left:40px}
+.gap{white-space:nowrap;scroll-margin-top:16px}
+.canvas{position:relative;width:fit-content;max-width:100%;margin-bottom:14px}.dot{position:absolute;transform:translate(-50%,-50%);min-width:28px;height:28px;border-radius:14px;background:var(--navy);color:#fff;font:600 13px/28px var(--font);text-align:center}
+.order{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.order li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:#fff}.order span{flex:1;min-width:0}.order button{border:1px solid var(--line);background:#fff;border-radius:6px;width:34px;height:32px}
+.foot{display:flex;gap:8px;align-items:center;padding:8px 14px;background:#fff;border-top:1px solid var(--line);padding-bottom:max(8px,env(safe-area-inset-bottom))}.nums{flex:1;display:flex;gap:14px;overflow-x:auto;padding:3px}.nums>div{display:flex;gap:4px;align-items:center}.nums button.p{border:0;background:none;font-weight:600;white-space:nowrap;padding:4px 6px;border-radius:6px}.nums button.p[aria-current=true]{background:var(--soft)}
+.num{width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:13px;flex:none;font-variant-numeric:tabular-nums;padding:0}.num.done{background:var(--navy);color:#fff;border-color:var(--navy)}.num.flagged{box-shadow:0 0 0 2px var(--orange)}.num.ok{background:var(--ok);color:#fff;border-color:var(--ok)}.num.bad{background:var(--bad);color:#fff;border-color:var(--bad)}.num.part{background:#8a6100;color:#fff;border-color:#8a6100}
+.key{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--soft);font-size:.94em}.key.ok{color:var(--ok)}.key.bad{color:var(--bad)}.key .note{color:var(--ink)}
+.tool{position:fixed;z-index:30;display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:0 8px 24px #0e0f3b2e}
+.notes{position:fixed;z-index:25;right:14px;top:64px;width:min(340px,calc(100vw - 28px));max-height:70vh;overflow-y:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 10px 30px #0e0f3b33;display:grid;gap:10px}.notes blockquote{margin:0;padding:6px 10px;background:var(--mark);border-radius:6px;font-size:13.5px}.notes textarea{width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;padding:8px}
+.shade{position:fixed;inset:0;z-index:50;background:#0e0f3bb3;display:grid;place-items:center;padding:18px}.box{background:#fff;border-radius:14px;padding:24px;max-width:460px;width:100%;display:grid;gap:14px}.box .acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.result{background:var(--card);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;gap:12px 30px;flex-wrap:wrap;align-items:center}.big{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}.result small{display:block;color:var(--muted);font-size:13px}.types{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--muted)}
+.load{display:grid;place-items:center;height:100%;color:var(--muted)}
+@media(max-width:820px){.swap{display:inline-block}.divider{display:none}.panes[data-show=text] .qs,.panes[data-show=qs] .text{display:none}.pane,.pane.text{width:100%;padding:16px}.saved{min-width:0}.foot{flex-wrap:wrap}.nums{order:-1;flex-basis:100%}.bar{padding:8px 10px;gap:6px 8px}.bar .btn.small{padding:5px 9px;font-size:13px}.result{max-height:38vh;overflow-y:auto}}
+@media(prefers-reduced-motion:no-preference){.pane{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+<div id="app" class="load" aria-live="polite">Loading…</div>
+<script>
+(function () {
+"use strict";
+
+var API = "/api/ielts/";
+var app = document.getElementById("app");
+var writer = Array.from(crypto.getRandomValues(new Uint8Array(12)), function (b) {
+  return b.toString(16).padStart(2, "0");
+}).join("");
+
+/* ---------- small helpers ---------- */
+function h(tag, props) {
+  var el = document.createElement(tag);
+  Object.keys(props || {}).forEach(function (k) {
+    var v = props[k];
+    if (v === undefined || v === null || v === false) return;
+    if (k.slice(0, 2) === "on") el.addEventListener(k.slice(2), v);
+    else if (k === "class") el.className = v;
+    else if (k === "value") el.value = v;
+    else if (v === true) el.setAttribute(k, "");
+    else el.setAttribute(k, v);
+  });
+  for (var i = 2; i < arguments.length; i++) add(el, arguments[i]);
+  return el;
+}
+function add(el, child) {
+  if (child === undefined || child === null || child === false) return;
+  if (Array.isArray(child)) child.forEach(function (c) { add(el, c); });
+  else el.append(child);
+}
+function show(node, cls) { app.className = cls; app.replaceChildren(node); }
+function pad(n) { return (n < 10 ? "0" : "") + n; }
+function store(key, value) {
+  try {
+    if (value === undefined) return JSON.parse(localStorage.getItem(key));
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) { return null; }
+}
+function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+
+/* ---------- API, with the site's sign-in cookies ---------- */
+function ApiError(status, data) { this.status = status; this.data = data || {}; }
+function send(method, path, body, keepalive) {
+  return fetch(path, {
+    method: method, credentials: "same-origin", keepalive: !!keepalive,
+    headers: body ? { "Content-Type": "application/json" } : {},
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+var refreshing = null;
+function refresh() {
+  if (!refreshing) {
+    refreshing = send("POST", "/api/auth/token/refresh/", {})
+      .catch(function () {})
+      .then(function () { refreshing = null; });
+  }
+  return refreshing;
+}
+async function api(method, path, body) {
+  var res = await send(method, API + path, body);
+  if (res.status === 401) {
+    // Another tab may have refreshed first, so try again either way.
+    await refresh();
+    res = await send(method, API + path, body);
+  }
+  var data = null;
+  try { data = await res.json(); } catch (e) { data = null; }
+  if (!res.ok) throw new ApiError(res.status, data);
+  return data;
+}
+
+/* ---------- dialogs ---------- */
+function dialog(title, text, buttons) {
+  return new Promise(function (resolve) {
+    var before = document.activeElement;
+    var shade = h("div", { class: "shade" });
+    function close(value) { shade.remove(); if (before && before.focus) before.focus(); resolve(value); }
+    var box = h("div", { class: "box", role: "dialog", "aria-modal": "true", "aria-label": title },
+      h("h2", {}, title), h("p", {}, text),
+      h("div", { class: "acts" }, buttons.map(function (b) {
+        return h("button", { class: "btn" + (b.main ? " main" : ""), onclick: function () { close(b.value); } }, b.label);
+      })));
+    shade.append(box);
+    shade.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && buttons.some(function (b) { return b.value === false; })) close(false);
+      if (e.key === "Tab") {
+        var all = box.querySelectorAll("button"), first = all[0], last = all[all.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    document.body.append(shade);
+    box.querySelector(".main, button").focus();
+  });
+}
+async function signIn() {
+  await dialog("Please sign in again", "Your session ended. Sign in from the site in a new tab, then come back here. Your answers are kept on this device.", [{ label: "I signed in", value: true, main: true }]);
+}
+
+/* ---------- home ---------- */
+var VARIANT = { academic: "Academic", general: "General Training" };
+var SKILL = { reading: "Reading", listening: "Listening" };
+var MODE = { practice: "Practice", simulation: "Simulation" };
+
+async function home() {
+  stopExam();
+  app.style.height = "";
+  show("Loading…", "load");
+  var data;
+  try { data = await api("GET", "exams/"); }
+  catch (e) {
+    if (e.status === 401) {
+      show(h("div", { class: "home" }, h("h1", {}, "IELTS tests"), h("p", {}, "Sign in to see your tests."),
+        h("p", {}, h("a", { class: "btn main", href: "/login" }, "Sign in"))), "");
+    } else {
+      show(h("div", { class: "home" }, h("h1", {}, "IELTS tests"), h("p", {}, "The tests didn’t load. Check your connection."),
+        h("p", {}, h("button", { class: "btn main", onclick: home }, "Try again"))), "");
+    }
+    return;
+  }
+  function tests(skill) {
+    var rows = [];
+    data.exams.forEach(function (x) {
+      x.skills.filter(function (k) { return k.skill === skill; }).forEach(function (k) {
+        rows.push(h("div", { class: "row" },
+          h("div", {}, h("b", {}, x.title), h("p", {}, (skill === "reading" ? VARIANT[x.variant] + ", " : "") + k.question_count + " question" + (k.question_count === 1 ? "" : "s"))),
+          h("div", { class: "acts" }, x.modes.map(function (m, i) {
+            return h("button", { class: "btn" + (i === 0 ? " main" : ""), onclick: function (e) { begin(x, k, m, e.currentTarget); } },
+              (k.open[m] ? "Continue " + MODE[m].toLowerCase() : MODE[m] + (m === "simulation" ? " (" + k.minutes + " min)" : "")));
+          }))));
+      });
+    });
+    return rows.length ? h("section", { class: "list" }, h("h2", {}, SKILL[skill]), rows) : null;
+  }
+  var lists = ["listening", "reading"].map(tests).filter(Boolean);
+  var results = data.results.map(function (r) {
+    return h("div", { class: "row" },
+      h("div", {}, h("b", {}, r.title), h("p", {}, SKILL[r.skill] + ", " + MODE[r.mode].toLowerCase() + ", " + new Date(r.submitted_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }))),
+      h("span", { class: "score" }, r.score + " / " + r.total, r.band ? " · band " + (+r.band) + " (estimated)" : ""),
+      h("div", { class: "acts" }, h("button", { class: "btn small", onclick: function () { location.hash = "/attempt/" + r.id; } }, "Review")));
+  });
+  show(h("div", { class: "home" },
+    h("header", {}, h("h1", {}, "IELTS tests"), h("a", { href: "/real-tests" }, "Back to Real Tests")),
+    lists.length ? lists : h("p", { class: "empty" }, "No tests are open for you now. They open with the IELTS course."),
+    results.length ? h("section", { class: "list" }, h("h2", {}, "Your results"), results) : null,
+    h("p", { class: "empty" }, "Practice tests by Ammar Academy. Not affiliated with IELTS. Bands are estimates.")), "");
+}
+
+function beep() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)(), osc = ctx.createOscillator(), gain = ctx.createGain();
+    gain.gain.value = 0.2; osc.frequency.value = 660;
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.6);
+  } catch (e) { /* no sound here */ }
+}
+async function begin(exam, kind, mode, button) {
+  if (mode === "simulation" && !kind.open[mode]) {
+    var go = "test", listening = kind.skill === "listening";
+    while (go === "test") {
+      go = await dialog("Start the simulation?", listening
+        ? "It takes about " + kind.minutes + " minutes. Each recording plays once and can’t be paused. Check your sound first."
+        : "You have " + kind.minutes + " minutes. The clock keeps running if you close the page, and your answers are submitted when it ends.",
+        [{ label: "Not now", value: false }].concat(listening ? [{ label: "Play a test sound", value: "test" }] : [], [{ label: "Start", value: true, main: true }]));
+      if (go === "test") beep();
+    }
+    if (!go) return;
+  }
+  button.disabled = true;
+  try {
+    var a = await api("POST", "exams/" + exam.id + "/start/", { skill: kind.skill, mode: mode });
+    location.hash = "/attempt/" + a.id;
+  } catch (e) {
+    button.disabled = false;
+    if (e.status === 401) { await signIn(); home(); return; }
+    await dialog("This test didn’t open", e.status === 404 ? "It isn’t open for you any more." : "Check your connection and try again.", [{ label: "OK", value: true, main: true }]);
+    if (e.status === 404) home();
+  }
+}
+
+/* ---------- exam state ---------- */
+var S = null;
+
+function silence() {
+  if (!S || !S.audio) return;
+  ["onpause", "onerror", "onended", "ontimeupdate"].forEach(function (k) { S.audio[k] = null; });
+  S.audio.pause(); S.audio.removeAttribute("src"); S.audio = null;
+}
+function stopExam() {
+  if (!S) return;
+  clearInterval(S.clock); clearTimeout(S.saveTimer);
+  silence();
+  if (S.dirty && !S.done) flush(true);
+  S = null;
+  closeTool();
+}
+
+async function openAttempt(id) {
+  stopExam();
+  show("Loading…", "load");
+  var data;
+  try { data = await api("POST", "attempts/" + id + "/claim/", { writer: writer }); }
+  catch (e) {
+    if (e.status === 401) { await signIn(); return openAttempt(id); }
+    if (e.status === 404) { location.hash = ""; return; }
+    show(h("div", { class: "home" }, h("p", {}, "The test didn’t load. Check your connection."),
+      h("p", {}, h("button", { class: "btn main", onclick: function () { openAttempt(id); } }, "Try again"))), "");
+    return;
+  }
+  setup(data);
+}
+
+async function setup(data) {
+  var w = data.workspace || {};
+  // Answers typed while offline that didn't reach the server.
+  var kept = data.submitted_at ? null : store("ielts-" + data.id);
+  if (kept && (!kept.unsaved || same(kept.answers, data.answers))) kept = null;
+  if (kept && !same(kept.base, data.answers)) {
+    // The server has something newer too, from another tab or device.
+    show("", "load");
+    var mine = await dialog("Two sets of answers", "This device has answers that weren’t saved, and newer ones were saved from another device. Which should we keep?", [{ label: "The saved ones", value: false, main: true }, { label: "This device’s", value: true }]);
+    if (!mine) kept = null;
+  }
+  var pref = store("ielts-view") || {};
+  silence();
+  S = {
+    id: data.id, data: data, content: data.content, done: !!data.submitted_at, result: data.result,
+    answers: Object.assign({}, data.answers), flags: new Set(w.flags || []), marks: w.marks || [], notes: w.notes || "",
+    listening: data.skill === "listening", timed: data.mode === "simulation", heard: data.heard || 0,
+    part: 0, seq: 0, dirty: false, saving: false, lastSave: 0, retry: 0,
+    offset: new Date(data.server_now).getTime() - Date.now(), deadline: data.deadline ? new Date(data.deadline).getTime() : null,
+    base: data.answers, size: pref.size || 16, split: pref.split || 50, warned: {}
+  };
+  if (kept) {
+    S.answers = kept.answers; S.flags = new Set(kept.flags || []); S.marks = kept.marks || []; S.notes = kept.notes || "";
+    S.dirty = true;
+  }
+  if (!kept) store("ielts-" + S.id, null);
+  document.documentElement.style.setProperty("--size", S.size + "px");
+  document.documentElement.style.setProperty("--split", S.split + "%");
+  S.results = {};
+  if (S.result) S.result.rows.forEach(function (r) { S.results[r.number] = r; });
+  render();
+  if (!S.done) {
+    S.clock = setInterval(tick, 500); tick();
+    if (S.listening && S.timed) startRecording();
+    if (S.dirty) schedule(0);
+  }
+}
+
+function now() { return Date.now() + S.offset; }
+
+function tick() {
+  if (!S || !S.deadline) return;
+  var left = Math.max(0, Math.ceil((S.deadline - now()) / 1000));
+  if (S.checkUntil) left = Math.min(left, Math.max(0, Math.ceil((S.checkUntil - now()) / 1000)));
+  var el = document.getElementById("timer");
+  if (el) {
+    // While the recordings play there is no clock to watch, as in the exam.
+    el.hidden = S.listening && !S.checkUntil;
+    el.textContent = Math.floor(left / 60) + ":" + pad(left % 60);
+    el.classList.toggle("warn", left <= 600);
+  }
+  if (!S.listening) [600, 300].forEach(function (s) {
+    if (left <= s && left > s - 5 && !S.warned[s]) { S.warned[s] = true; say(s / 60 + " minutes left"); }
+  });
+  if (left === 0 && !S.ending) { S.ending = true; submit(true); }
+}
+function say(text) {
+  var el = document.getElementById("say");
+  if (el) el.textContent = text;
+}
+
+/* ---------- saving ---------- */
+function snapshot() {
+  return { answers: S.answers, base: S.base, flags: Array.from(S.flags), marks: S.marks, notes: S.notes };
+}
+function payload() {
+  S.seq += 1;
+  return { writer: writer, sequence: S.seq, heard: Math.floor(S.heard), answers: S.answers, workspace: { flags: Array.from(S.flags), marks: S.marks, notes: S.notes } };
+}
+function changed() {
+  if (!S || S.done) return;
+  S.dirty = true;
+  store("ielts-" + S.id, Object.assign({ unsaved: true }, snapshot()));
+  status("Saving…");
+  // At most one save every 10 seconds: the API allows 1000 requests an hour.
+  schedule(Math.max(2000, S.lastSave + 10000 - Date.now()));
+}
+function schedule(ms) {
+  if (S.saveTimer) return;
+  S.saveTimer = setTimeout(function () { S.saveTimer = null; flush(false); }, ms);
+}
+function status(text, bad) {
+  var el = document.getElementById("saved");
+  if (el) { el.textContent = text; el.classList.toggle("bad", !!bad); }
+}
+async function flush(leaving) {
+  var s = S;
+  if (!s || s.done || !s.dirty) return;
+  if (leaving) {
+    send("PUT", API + "attempts/" + s.id + "/answers/", payload(), true).catch(function () {});
+    return;
+  }
+  if (s.saving) { schedule(1000); return; }
+  s.saving = true; s.dirty = false; s.lastSave = Date.now();
+  var sent = Object.assign({}, s.answers);
+  try {
+    var r = await api("PUT", "attempts/" + s.id + "/answers/", payload());
+    s.retry = 0; s.offset = new Date(r.server_now).getTime() - Date.now();
+    s.base = sent;
+    if (S === s) {
+      store("ielts-" + s.id, Object.assign({ unsaved: s.dirty }, snapshot()));
+      if (!s.dirty) status("Saved");
+    }
+  } catch (e) {
+    s.dirty = true;
+    if (S !== s) return;
+    if (e.status === 409) return conflict(e.data.code);
+    if (e.status === 401) { status("Not saved", true); await signIn(); if (S === s) schedule(0); return; }
+    s.retry = Math.min(s.retry + 1, 6);
+    status("Not saved, retrying", true);
+    s.saveTimer = null; schedule(Math.min(60000, 2000 * Math.pow(2, s.retry)));
+  } finally { s.saving = false; }
+}
+async function conflict(code) {
+  var s = S;
+  if (code === "opened_elsewhere") {
+    clearInterval(s.clock); clearTimeout(s.saveTimer); s.saveTimer = null; s.dirty = false;
+    silence();
+    store("ielts-" + s.id, null);
+    await dialog("This test is open in another tab or device", "Answers are being saved there. Continue here to take over.", [{ label: "Continue here", value: true, main: true }]);
+    S = null; openAttempt(s.id);
+  } else { S.dirty = false; store("ielts-" + s.id, null); openAttempt(s.id); }
+}
+document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flush(true); });
+window.addEventListener("pagehide", function () { flush(true); });
+window.addEventListener("online", function () { if (S && S.dirty) { clearTimeout(S.saveTimer); S.saveTimer = null; flush(false); } });
+
+async function submit(timeOver) {
+  var s = S;
+  if (!s || s.submitting) return;
+  if (!timeOver) {
+    var left = allQuestions().filter(function (q) { return !answered(q); }).length;
+    var ok = await dialog("Submit your answers?", (left ? left + " question" + (left === 1 ? " has" : "s have") + " no full answer. " : "") + (S.listening && S.timed && !S.checkUntil ? "The recordings haven’t finished. " : "") + "You can’t change answers after submitting.", [{ label: "Keep working", value: false }, { label: "Submit", value: true, main: true }]);
+    if (!ok || S !== s) return;
+  }
+  s.submitting = true;
+  clearTimeout(s.saveTimer); s.saveTimer = null; clearInterval(s.clock);
+  status("Submitting…");
+  try {
+    var data = await api("POST", "attempts/" + s.id + "/submit/", payload());
+    s.done = true; s.dirty = false;
+    store("ielts-" + s.id, null); store("ielts-check-" + s.id, null);
+    if (S === s) setup(data);
+  } catch (e) {
+    s.submitting = false;
+    if (S !== s) return;
+    if (e.status === 409) return conflict(e.data.code);
+    if (e.status === 401) { await signIn(); if (S === s) submit(true); return; }
+    status("Not submitted", true);
+    await dialog("Not submitted yet", "Check your connection. Your answers are kept on this device.", [{ label: "Try again", value: true, main: true }]);
+    if (S === s) submit(true);
+  }
+}
+
+/* ---------- listening ---------- */
+function clock(t) { t = Math.max(0, Math.floor(t || 0)); return Math.floor(t / 60) + ":" + pad(t % 60); }
+function makeAudio() {
+  var pref = store("ielts-view") || {};
+  var audio = new Audio();
+  audio.preload = "auto";
+  audio.volume = pref.volume === undefined ? 1 : pref.volume;
+  return audio;
+}
+function volume(audio) {
+  return h("label", {}, "Volume", h("input", { class: "vol", type: "range", min: "0", max: "1", step: "0.05", value: String(audio.volume), "aria-label": "Volume", oninput: function (e) {
+    audio.volume = +e.target.value;
+    store("ielts-view", Object.assign(store("ielts-view") || {}, { volume: audio.volume }));
+  } }));
+}
+// The links to the recordings expire: ask for new ones.
+async function freshLinks() {
+  var s = S, data = await api("GET", "attempts/" + s.id + "/");
+  data.content.parts.forEach(function (p, i) { s.content.parts[i].audio_url = p.audio_url; });
+}
+
+// Practice and review: play, pause, move, change speed.
+function player() {
+  var s = S, audio = s.audio = makeAudio(), loaded = -1, tries = 0;
+  var play = h("button", { class: "btn small main", onclick: toggle }, "Play");
+  var seek = h("input", { class: "seek", type: "range", min: "0", max: "100", step: "0.5", value: "0", "aria-label": "Position in the recording", oninput: function () { audio.currentTime = +seek.value; show(); } });
+  var time = h("span", { class: "time" }, "0:00 / 0:00");
+  var note = h("span", { class: "time", role: "status" });
+  function back(d) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + d)); show(); }
+  function length() { return isFinite(audio.duration) && audio.duration ? audio.duration : s.content.parts[s.part].audio_seconds; }
+  function show() {
+    seek.max = String(length()); seek.value = String(audio.currentTime);
+    seek.setAttribute("aria-valuetext", clock(audio.currentTime));
+    time.textContent = clock(audio.currentTime) + " / " + clock(length());
+  }
+  function toggle() { if (audio.paused) audio.play().catch(function () {}); else audio.pause(); }
+  audio.onplay = function () { play.textContent = "Pause"; note.textContent = ""; };
+  audio.onpause = function () { play.textContent = "Play"; };
+  audio.ontimeupdate = audio.onloadedmetadata = show;
+  audio.oncanplay = function () { tries = 0; };
+  audio.onerror = async function () {
+    if (S !== s || !audio.getAttribute("src")) return;
+    if (tries++ > 4) { note.textContent = "The recording didn’t load. Check your connection."; return; }
+    var at = audio.currentTime, was = loaded;
+    note.textContent = "Loading the recording…";
+    await new Promise(function (ok) { setTimeout(ok, 1500 * tries); });
+    try { await freshLinks(); } catch (e) { /* try the old link */ }
+    if (S !== s || loaded !== was) return;
+    audio.src = s.content.parts[loaded].audio_url; audio.currentTime = at;
+  };
+  // Every part has its own recording, kept where it was while on that part.
+  s.load = function (i) {
+    if (i === loaded) return;
+    audio.pause(); loaded = i; tries = 0;
+    audio.src = s.content.parts[i].audio_url || "";
+    show();
+  };
+  var speed = h("select", { "aria-label": "Speed", onchange: function () { audio.playbackRate = audio.defaultPlaybackRate = +speed.value; } }, [0.75, 1, 1.25, 1.5].map(function (v) { return h("option", { value: String(v) }, v + "×"); }));
+  speed.value = "1";
+  var bar = document.getElementById("player");
+  bar.replaceChildren(play, h("button", { class: "btn small", "aria-label": "Back 5 seconds", onclick: function () { back(-5); } }, "−5 s"), h("button", { class: "btn small", "aria-label": "Forward 5 seconds", onclick: function () { back(5); } }, "+5 s"), seek, time, speed, volume(audio), note);
+}
+
+// Simulation: every recording once, in order, without stopping.
+function startRecording() {
+  var s = S, parts = s.content.parts, audio = s.audio = makeAudio(), index = 0, base = 0, tries = 0, waiting = false;
+  var total = s.content.audio_seconds;
+  while (index < parts.length && s.heard >= base + parts[index].audio_seconds - 1) { base += parts[index].audio_seconds; index++; }
+  var label = h("b", {}), bar = h("progress", { max: String(total), "aria-label": "Recordings played" }), note = h("span", { class: "time", role: "status" });
+  document.getElementById("player").replaceChildren(label, bar, note, volume(audio));
+  function paint() {
+    label.textContent = index < parts.length ? "Part " + (index + 1) + " of " + parts.length : "Check your answers";
+    bar.value = Math.min(total, s.heard);
+  }
+  function finish() {
+    paint();
+    note.textContent = "The recordings have ended.";
+    // Reloading doesn’t start the two minutes again.
+    s.checkUntil = store("ielts-check-" + s.id) || now() + s.data.check_seconds * 1000;
+    store("ielts-check-" + s.id, s.checkUntil);
+    say("The recordings have ended. You have 2 minutes to check your answers.");
+    changed();
+  }
+  function run() {
+    if (S !== s || s.done) return;
+    if (index >= parts.length) return finish();
+    audio.src = parts[index].audio_url;
+    audio.onloadedmetadata = function () { audio.currentTime = Math.max(0, Math.min(s.heard - base, (audio.duration || 1) - 0.2)); };
+    audio.play().then(function () { note.textContent = ""; tries = 0; }).catch(function (e) { if (e && e.name === "NotAllowedError") ask(); });
+    paint();
+  }
+  // Browsers start sound only after a click.
+  async function ask() {
+    if (waiting) return;
+    waiting = true;
+    await dialog(s.heard ? "Continue the recording" : "Ready to listen?", s.heard ? "It continues from where it stopped." : "The recording starts when you press Start.", [{ label: s.heard ? "Continue" : "Start", value: true, main: true }]);
+    waiting = false;
+    run();
+  }
+  var saved = s.heard;
+  audio.ontimeupdate = function () {
+    s.heard = Math.max(s.heard, base + audio.currentTime);
+    paint();
+    // Leaving the page saves how far it got; staying saves it now and then.
+    if (s.heard - saved >= 1) s.dirty = true;
+    if (s.heard - saved >= 10) { saved = s.heard; schedule(0); }
+  };
+  audio.onended = function () {
+    base += parts[index].audio_seconds; s.heard = Math.max(s.heard, base); index++;
+    s.dirty = true; schedule(0);
+    if (index < parts.length) go(index);
+    run();
+  };
+  // A keyboard or headset pause button doesn’t stop the exam.
+  audio.onpause = function () { if (S === s && !s.done && !audio.ended && !audio.error && audio.getAttribute("src")) audio.play().catch(function () { ask(); }); };
+  audio.onerror = async function () {
+    if (S !== s || s.done || !audio.getAttribute("src")) return;
+    note.textContent = "Reconnecting to the recording…";
+    tries++;
+    await new Promise(function (ok) { setTimeout(ok, Math.min(8000, 1000 * tries)); });
+    try { await freshLinks(); } catch (e) { /* try the old link */ }
+    run();
+  };
+  if (index < parts.length && index) go(index);
+  paint();
+  if (index >= parts.length) finish(); else ask();
+}
+
+/* ---------- answers ---------- */
+function allQuestions() {
+  var out = [];
+  S.content.parts.forEach(function (p, pi) { p.groups.forEach(function (g) { g.questions.forEach(function (q) { out.push({ q: q, g: g, p: pi }); }); }); });
+  return out;
+}
+function answered(x) {
+  var v = S.answers[x.q.number];
+  if (x.g.type === "choice" && x.q.span > 1) return Array.isArray(v) && v.length === x.q.span;
+  return Array.isArray(v) ? v.length > 0 : !!(v && v.trim());
+}
+function set(number, value) {
+  if (S.done) return;
+  if (value === "" || (Array.isArray(value) && !value.length)) delete S.answers[number];
+  else S.answers[number] = value;
+  changed(); numbers();
+}
+
+/* ---------- rendering ---------- */
+function render() {
+  var d = S.data, bar = h("div", { class: "bar" },
+    h("button", { class: "btn small", onclick: leave }, S.done ? "All tests" : "Leave"),
+    h("span", { class: "title" }, d.title),
+    S.done ? null : h("span", { id: "saved", class: "saved", role: "status" }, S.dirty ? "Saving…" : "Saved"),
+    S.deadline && !S.done ? h("span", { hidden: S.listening, id: "timer", class: "timer", role: "timer" }) : null,
+    S.listening && !S.done ? null : h("button", { class: "btn small swap", id: "swap", onclick: swap }, textName()),
+    h("button", { class: "btn small", "aria-label": "Smaller text", onclick: function () { resize(-1); } }, "A−"),
+    h("button", { class: "btn small", "aria-label": "Larger text", onclick: function () { resize(1); } }, "A+"),
+    h("button", { class: "btn small", id: "notesbtn", "aria-pressed": "false", onclick: toggleNotes }, "Notes"),
+    S.done ? null : h("button", { class: "btn small", id: "submit", onclick: function () { submit(false); } }, "Submit"));
+  var res = null;
+  if (S.done) {
+    res = h("div", { class: "result" },
+      h("div", {}, h("span", { class: "big" }, d.score + " / " + d.total), h("small", {}, "correct")),
+      d.band ? h("div", {}, h("span", { class: "big" }, String(+d.band)), h("small", {}, "estimated band")) : null,
+      h("div", { class: "types" }, S.result.by_type.map(function (t) { return h("span", {}, t.label + ": " + t.right + "/" + t.total); })));
+  }
+  var panes = h("div", { class: "panes" + (S.listening && !S.done ? " one" : ""), "data-show": "qs", id: "panes" },
+    h("div", { class: "pane text", id: "text", tabindex: "0", "aria-label": textName() }), divider(),
+    h("div", { class: "pane qs", id: "qs", tabindex: "0", "aria-label": "Questions" }));
+  var one = S.content.parts.length < 2;
+  var foot = h("div", { class: "foot" }, h("div", { class: "nums", id: "nums" }),
+    h("button", { class: "btn small", hidden: one, id: "prev", onclick: function () { go(S.part - 1); } }, "Previous"),
+    h("button", { class: "btn small", hidden: one, id: "next", onclick: function () { go(S.part + 1); } }, "Next"));
+  show(h("div", { class: "exam" }, bar, S.listening ? h("div", { class: "player", id: "player" }) : null, res, panes, foot, h("span", { id: "say", role: "alert", style: "position:absolute;clip-path:inset(50%)" })), "full");
+  app.style.height = "100%";
+  if (S.listening && (S.done || !S.timed)) player();
+  go(S.part);
+  if (!S.done) document.getElementById("text").addEventListener("mouseup", offerTool);
+  if (!S.done) document.getElementById("text").addEventListener("touchend", function () { setTimeout(offerTool, 10); });
+}
+
+async function leave() {
+  if (!S.done) {
+    var text = S.deadline ? "The clock keeps running. You can come back while there is time." : "Your answers are saved. You can continue later.";
+    if (!(await dialog("Leave the test?", text, [{ label: "Stay", value: false }, { label: "Leave", value: true, main: true }]))) return;
+  }
+  location.hash = "";
+}
+function textName() { return S.listening ? "Transcript" : "Passage"; }
+function partName(i) { return (S.listening ? "Part " : "Passage ") + (i + 1); }
+function swap() {
+  var p = document.getElementById("panes"), next = p.dataset.show === "qs" ? "text" : "qs";
+  p.dataset.show = next;
+  document.getElementById("swap").textContent = next === "qs" ? textName() : "Questions";
+}
+function showPane(name) {
+  var p = document.getElementById("panes");
+  if (p.classList.contains("one")) return;
+  if (p.dataset.show !== name) swap();
+}
+function resize(step) {
+  S.size = Math.min(24, Math.max(13, S.size + step));
+  document.documentElement.style.setProperty("--size", S.size + "px");
+  keepView();
+}
+function keepView() { store("ielts-view", Object.assign(store("ielts-view") || {}, { size: S.size, split: S.split })); }
+function divider() {
+  var el = h("button", { class: "divider", type: "button", "aria-label": "Resize the passage", role: "separator" });
+  function to(x) {
+    var box = document.getElementById("panes").getBoundingClientRect();
+    S.split = Math.min(75, Math.max(25, ((x - box.left) / box.width) * 100));
+    document.documentElement.style.setProperty("--split", S.split + "%");
+  }
+  el.addEventListener("pointerdown", function (e) { el.setPointerCapture(e.pointerId); e.preventDefault(); });
+  el.addEventListener("pointermove", function (e) { if (el.hasPointerCapture(e.pointerId)) to(e.clientX); });
+  el.addEventListener("pointerup", keepView);
+  el.addEventListener("keydown", function (e) {
+    var d = e.key === "ArrowLeft" ? -3 : e.key === "ArrowRight" ? 3 : 0;
+    if (!d) return;
+    S.split = Math.min(75, Math.max(25, S.split + d));
+    document.documentElement.style.setProperty("--split", S.split + "%");
+  });
+  return el;
+}
+
+function go(index, number) {
+  var parts = S.content.parts;
+  S.part = Math.min(parts.length - 1, Math.max(0, index));
+  passage(); questions(); numbers();
+  if (S.load) S.load(S.part);
+  document.getElementById("prev").disabled = S.part === 0;
+  document.getElementById("next").disabled = S.part === parts.length - 1;
+  if (!number) { document.getElementById("text").scrollTop = 0; document.getElementById("qs").scrollTop = 0; }
+}
+function goTo(number, part) {
+  if (part !== S.part) go(part, number);
+  var el = document.getElementById("q" + number);
+  if (!el) return;
+  showPane(el.closest("#text") ? "text" : "qs");
+  el.scrollIntoView({ block: "center" });
+  var field = el.matches("input,select") ? el : el.querySelector("input,select,button.up");
+  if (field) field.focus({ preventScroll: true });
+}
+
+function numbers() {
+  var box = document.getElementById("nums");
+  var kids = S.content.parts.map(function (p, pi) {
+    var row = h("div", {}, h("button", { class: "p", "aria-current": String(pi === S.part), onclick: function () { go(pi); } }, partName(pi)));
+    p.groups.forEach(function (g) {
+      g.questions.forEach(function (q) {
+        for (var i = 0; i < q.span; i++) {
+          var v = S.answers[q.number], cls = "num", label = "Question " + (q.number + i);
+          var done = q.span > 1 ? Array.isArray(v) && v.length > i : answered({ q: q, g: g });
+          if (S.done) {
+            var r = S.results[q.number];
+            var right = q.span > 1 ? i < r.right : r.right === 1;
+            cls += right ? " ok" : " bad"; label += right ? ", correct" : ", wrong";
+          } else if (done) { cls += " done"; label += ", answered"; }
+          if (S.flags.has(q.number)) { cls += " flagged"; label += ", flagged"; }
+          row.append(h("button", { class: cls, "aria-label": label, onclick: function () { goTo(q.number, pi); } }, String(q.number + i)));
+        }
+      });
+    });
+    return row;
+  });
+  var left = box.scrollLeft;
+  box.replaceChildren.apply(box, kids);
+  box.scrollLeft = left;
+}
+
+/* ---------- passage, highlights and notes ---------- */
+function headingGroups() { return S.content.parts[S.part].groups.filter(function (g) { return g.type === "headings"; }); }
+
+function passage() {
+  var p = S.content.parts[S.part], box = document.getElementById("text");
+  var slots = {};
+  headingGroups().forEach(function (g) { g.questions.forEach(function (q) { slots[q.paragraph] = { g: g, q: q }; }); });
+  var nodes = [h("h2", {}, p.title || partName(S.part)), p.image ? h("img", { src: p.image, alt: "" }) : null];
+  p.paragraphs.forEach(function (text, i) {
+    var letter = p.letters[i];
+    if (letter && slots[letter]) nodes.push(slot(slots[letter].g, slots[letter].q));
+    var el = h("p", { class: "para", "data-para": i });
+    if (letter) el.append(h("b", { "data-skip": "1" }, letter + " "));
+    pieces(text, i).forEach(function (n) { el.append(n); });
+    nodes.push(el);
+  });
+  box.replaceChildren.apply(box, nodes.filter(Boolean));
+}
+function pieces(text, para) {
+  var marks = S.marks.filter(function (m) { return m.part === S.part && m.para === para; }).sort(function (a, b) { return a.start - b.start; });
+  var out = [], at = 0;
+  marks.forEach(function (m) {
+    var start = Math.max(at, m.start), end = Math.min(text.length, m.end);
+    if (end <= start) return;
+    if (start > at) out.push(text.slice(at, start));
+    out.push(h("mark", { class: m.note ? "noted" : "", title: m.note || "", tabindex: S.done ? null : "0", onclick: function (e) { if (!S.done) markTool(m, e.currentTarget); }, onkeydown: function (e) { if (e.key === "Enter" && !S.done) markTool(m, e.currentTarget); } }, text.slice(start, end)));
+    at = end;
+  });
+  if (at < text.length) out.push(text.slice(at));
+  return out;
+}
+function offsetIn(para, node, offset) {
+  var range = document.createRange();
+  range.selectNodeContents(para); range.setEnd(node, offset);
+  var skip = para.querySelector("[data-skip]");
+  return Math.max(0, range.toString().length - (skip ? skip.textContent.length : 0));
+}
+function selected() {
+  var sel = getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return null;
+  var r = sel.getRangeAt(0);
+  function para(n) { var e = n.nodeType === 1 ? n : n.parentElement; return e && e.closest("#text p.para"); }
+  var a = para(r.startContainer), b = para(r.endContainer);
+  if (!a) return null;
+  var start = offsetIn(a, r.startContainer, r.startOffset);
+  var full = S.content.parts[S.part].paragraphs[+a.dataset.para].length;
+  // One paragraph at a time: a selection across two is cut at the first.
+  var end = a === b ? offsetIn(a, r.endContainer, r.endOffset) : full;
+  return end > start ? { part: S.part, para: +a.dataset.para, start: start, end: end, box: r.getBoundingClientRect() } : null;
+}
+var tool = null;
+function closeTool() { if (tool) { tool.remove(); tool = null; } }
+function place(box, kids) {
+  closeTool();
+  tool = h("div", { class: "tool", role: "toolbar" }, kids);
+  document.body.append(tool);
+  var w = tool.offsetWidth;
+  tool.style.left = Math.max(8, Math.min(innerWidth - w - 8, box.left + box.width / 2 - w / 2)) + "px";
+  tool.style.top = (box.top > 70 ? box.top - tool.offsetHeight - 8 : box.bottom + 8) + "px";
+}
+function offerTool() {
+  if (!S || S.done) return;
+  var s = selected();
+  if (!s) return;
+  place(s.box, [
+    h("button", { class: "btn small main", onclick: function () { addMark(s); } }, "Highlight"),
+    h("button", { class: "btn small", onclick: function () { var m = addMark(s); writeNote(m); } }, "Add a note")]);
+}
+document.addEventListener("pointerdown", function (e) { if (tool && !tool.contains(e.target)) closeTool(); });
+function addMark(s) {
+  // Join with any highlight it touches.
+  var start = s.start, end = s.end, note = "";
+  S.marks = S.marks.filter(function (m) {
+    if (m.part !== s.part || m.para !== s.para || m.end < start || m.start > end) return true;
+    start = Math.min(start, m.start); end = Math.max(end, m.end); note = note || m.note || "";
+    return false;
+  });
+  var m = { part: s.part, para: s.para, start: start, end: end };
+  if (note) m.note = note;
+  if (S.marks.length >= 300) S.marks.shift();
+  S.marks.push(m);
+  getSelection().removeAllRanges(); closeTool(); passage(); changed(); drawNotes();
+  return m;
+}
+function markTool(m, el) {
+  place(el.getBoundingClientRect(), [
+    h("button", { class: "btn small", onclick: function () { closeTool(); writeNote(m); } }, m.note ? "Edit note" : "Add a note"),
+    h("button", { class: "btn small", onclick: function () { S.marks = S.marks.filter(function (x) { return x !== m; }); closeTool(); passage(); changed(); drawNotes(); } }, "Remove")]);
+}
+function writeNote(m) {
+  openNotes();
+  var field = document.querySelector('[data-mark="' + S.marks.indexOf(m) + '"]');
+  if (field) field.focus();
+}
+function toggleNotes() { var n = document.getElementById("notes"); if (n) closeNotes(); else openNotes(); }
+function openNotes() {
+  if (!document.getElementById("notes")) app.append(h("aside", { class: "notes", id: "notes", "aria-label": "Notes" }));
+  document.getElementById("notesbtn").setAttribute("aria-pressed", "true");
+  drawNotes(true);
+}
+function closeNotes() {
+  document.getElementById("notes").remove();
+  document.getElementById("notesbtn").setAttribute("aria-pressed", "false");
+}
+function drawNotes() {
+  var box = document.getElementById("notes");
+  if (!box) return;
+  var kids = [h("div", { style: "display:flex;justify-content:space-between;align-items:center" }, h("b", {}, "Notes"), h("button", { class: "btn small", onclick: closeNotes }, "Close")),
+    h("textarea", { "aria-label": "Your notes", maxlength: "5000", value: S.notes, readonly: S.done, placeholder: "Write anything here. Nobody else sees it.", oninput: function (e) { S.notes = e.target.value; changed(); } })];
+  S.marks.forEach(function (m, i) {
+    var p = S.content.parts[m.part], text = p && p.paragraphs[m.para];
+    if (!text) return;
+    kids.push(h("blockquote", {}, text.slice(m.start, m.end).slice(0, 140)),
+      h("textarea", { "data-mark": i, "aria-label": "Note on this highlight", maxlength: "1000", style: "min-height:44px", value: m.note || "", readonly: S.done, oninput: function (e) { m.note = e.target.value; changed(); }, onchange: passage }));
+  });
+  box.replaceChildren.apply(box, kids);
+}
+
+/* ---------- questions ---------- */
+function questions() {
+  var p = S.content.parts[S.part], box = document.getElementById("qs");
+  var kids = p.groups.map(group);
+  if (S.listening) kids.unshift(h("h2", {}, partName(S.part) + (p.title ? ": " + p.title : "")));
+  box.replaceChildren.apply(box, kids);
+}
+function group(g) {
+  var kids = [h("h3", {}, g.first === g.last ? "Question " + g.first : "Questions " + g.first + "–" + g.last), h("p", { class: "ins" }, g.instructions)];
+  if (g.image) kids.push(h("div", { class: "canvas" }, h("img", { src: g.image, alt: "" }), (g.points || []).map(function (pt, i) { return h("span", { class: "dot", style: "left:" + pt.x + "%;top:" + pt.y + "%" }, String(g.questions[i].number)); })));
+  if (g.choices && g.type !== "judgement") kids.push(choiceList(g));
+  if (g.rows) {
+    kids.push(h("table", { class: "rows " + g.layout }, h("tbody", {}, g.rows.map(function (row) {
+      return h("tr", {}, row.map(function (cell) {
+        return h("td", {}, cell.map(function (piece) {
+          if (piece.gap === undefined) return piece.text;
+          var q = g.questions[piece.gap];
+          return h("span", { class: "gap" }, h("span", { class: "n" }, String(q.number)), " ", g.type === "gaps_bank" ? picker(g, q) : typed(q));
+        }));
+      }));
+    }))));
+    g.questions.forEach(function (q) { kids.push(key(g, q)); });
+  } else {
+    g.questions.forEach(function (q) { kids.push(question(g, q)); });
+  }
+  return h("section", { class: "group" }, kids);
+}
+function choiceList(g) {
+  var used = g.questions.map(function (q) { return S.answers[q.number]; });
+  return h("ul", { class: "choices", "data-group": g.id }, g.choices.map(function (c) {
+    return h("li", { draggable: S.done ? null : "true", class: !g.reuse && used.indexOf(c.key) >= 0 ? "used" : "", ondragstart: function (e) { e.dataTransfer.setData("text/plain", g.id + "|" + c.key); } }, h("b", {}, c.key), h("span", {}, c.text));
+  }));
+}
+function redrawChoices(g) {
+  var old = document.querySelector('[data-group="' + g.id + '"]');
+  if (old) old.replaceWith(choiceList(g));
+}
+function droppable(el, g, onDrop) {
+  if (S.done) return el;
+  el.addEventListener("dragover", function (e) { e.preventDefault(); el.classList.add("over"); });
+  el.addEventListener("dragleave", function () { el.classList.remove("over"); });
+  el.addEventListener("drop", function (e) {
+    e.preventDefault(); el.classList.remove("over");
+    var d = e.dataTransfer.getData("text/plain").split("|");
+    if (d[0] === g.id && g.choices.some(function (c) { return c.key === d[1]; })) onDrop(d[1]);
+  });
+  return el;
+}
+function picker(g, q, long) {
+  var el = h("select", { class: "a", id: "q" + q.number, "aria-label": "Answer " + q.number, disabled: S.done },
+    h("option", { value: "" }, long ? "Choose a heading" : ""),
+    g.choices.map(function (c) { return h("option", { value: c.key }, long ? c.key + ". " + c.text : c.key); }));
+  el.value = S.answers[q.number] || "";
+  function pick(v) { el.value = v; set(q.number, v); redrawChoices(g); }
+  el.addEventListener("change", function () { pick(el.value); });
+  return droppable(el, g, pick);
+}
+function slot(g, q) {
+  var box = h("div", { class: "slot" }, h("span", { class: "n" }, String(q.number)), picker(g, q, true));
+  return droppable(box, g, function (v) { var s = box.querySelector("select"); s.value = v; set(q.number, v); redrawChoices(g); });
+}
+function typed(q) {
+  return h("input", { class: "a", id: "q" + q.number, type: "text", maxlength: "300", autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-label": "Answer " + q.number, value: S.answers[q.number] || "", readonly: S.done, oninput: function (e) { set(q.number, e.target.value); } });
+}
+function flagButton(q) {
+  if (S.done) return null;
+  var b = h("button", { class: "flag", "aria-pressed": String(S.flags.has(q.number)), "aria-label": "Flag question " + q.number }, "Flag");
+  b.addEventListener("click", function () {
+    if (S.flags.has(q.number)) S.flags.delete(q.number); else S.flags.add(q.number);
+    b.setAttribute("aria-pressed", String(S.flags.has(q.number)));
+    changed(); numbers();
+  });
+  return b;
+}
+function question(g, q) {
+  var label = q.span > 1 ? q.number + "–" + (q.number + q.span - 1) : String(q.number);
+  var body;
+  if (g.type === "headings") body = h("button", { class: "btn small", onclick: function () { goTo(q.number, S.part); } }, S.done ? "Show paragraph" : "Choose heading");
+  else if (g.type === "choice") body = options(g, q);
+  else if (g.type === "judgement") body = h("div", { class: "opts inline", role: "radiogroup", "aria-label": "Question " + label }, g.choices.map(function (c) { return radio(q, c.key, c.text); }));
+  else if (g.type === "order") body = order(q);
+  else if (g.choices) body = picker(g, q);
+  else body = typed(q);
+  return h("div", { class: "q", id: g.type === "headings" || g.type === "matching" || g.type === "label" || g.type === "short" ? null : "q" + q.number },
+    h("div", { class: "qp" }, h("span", { class: "n" }, label), h("div", {}, q.prompt ? h("p", {}, q.prompt) : null, body), flagButton(q)), key(g, q));
+}
+function radio(q, value, text, letter) {
+  return h("label", { class: "opt" }, h("input", { type: "radio", name: "r" + q.number, value: value, checked: S.answers[q.number] === value, disabled: S.done, onchange: function () { set(q.number, value); } }), letter ? h("b", {}, letter) : null, h("span", {}, text));
+}
+function options(g, q) {
+  if (q.span === 1) return h("div", { class: "opts", role: "radiogroup", "aria-label": "Question " + q.number }, q.options.map(function (o) { return radio(q, o.key, o.text, o.key); }));
+  var box = h("div", { class: "opts" });
+  function draw(focus) {
+    var chosen = S.answers[q.number] || [];
+    box.replaceChildren.apply(box, q.options.map(function (o) {
+      var on = chosen.indexOf(o.key) >= 0;
+      return h("label", { class: "opt" }, h("input", { type: "checkbox", value: o.key, checked: on, disabled: S.done || (!on && chosen.length >= q.span), onchange: function (e) {
+        var next = chosen.filter(function (k) { return k !== o.key; });
+        if (e.target.checked) next.push(o.key);
+        set(q.number, next.sort()); draw(o.key);
+      } }), h("b", {}, o.key), h("span", {}, o.text));
+    }));
+    if (focus) box.querySelector('input[value="' + focus + '"]').focus();
+  }
+  draw();
+  return box;
+}
+function order(q) {
+  var list = h("ol", { class: "order" });
+  var text = {};
+  q.options.forEach(function (o) { text[o.key] = o.text; });
+  function draw(focus) {
+    var keys = S.answers[q.number] || q.options.map(function (o) { return o.key; });
+    list.replaceChildren.apply(list, keys.map(function (k, i) {
+      function move(d, cls) {
+        return h("button", { class: cls, type: "button", disabled: S.done || i + d < 0 || i + d >= keys.length, "aria-label": "Move " + (d < 0 ? "up" : "down") + ": " + text[k], onclick: function () {
+          var next = keys.slice(); next[i] = next[i + d]; next[i + d] = k;
+          set(q.number, next); draw({ key: k, cls: cls });
+        } }, d < 0 ? "↑" : "↓");
+      }
+      return h("li", { "data-key": k }, h("span", {}, text[k]), move(-1, "up"), move(1, "down"));
+    }));
+    if (focus) {
+      var li = list.querySelector('[data-key="' + focus.key + '"]');
+      var b = li.querySelector("." + focus.cls);
+      (b.disabled ? li.querySelector("button:not(:disabled)") : b).focus();
+    }
+  }
+  draw();
+  return list;
+}
+function key(g, q) {
+  var r = S.done && S.results[q.number];
+  if (!r) return null;
+  var full = r.right === q.span, texts = {};
+  (q.options.length ? q.options : g.choices || []).forEach(function (o) { texts[o.key] = o.text; });
+  var answer = [].concat(r.answer);
+  var shown = g.type === "order" ? answer.map(function (k) { return texts[k]; }).join(", then ")
+    : g.type === "gaps" || g.type === "short" || !Object.keys(texts).length ? answer.join(" or ")
+    : answer.map(function (k) { return texts[k] && texts[k] !== k ? k + ". " + texts[k] : k; }).join(" and ");
+  return h("div", { class: "key " + (full ? "ok" : "bad") },
+    h("b", {}, q.number + (full ? " Correct. " : " " + (r.right ? r.right + " of " + q.span + " correct. " : "Wrong. "))), full ? null : "Answer: " + shown + (/[.?!]$/.test(shown) ? "" : "."),
+    r.note ? h("div", { class: "note" }, r.note) : null);
+}
+
+/* ---------- routing ---------- */
+function route() {
+  var m = /^#\/attempt\/([0-9a-f-]{36})$/.exec(location.hash);
+  if (document.getElementById("notes")) document.getElementById("notes").remove();
+  if (m) openAttempt(m[1]); else home();
+}
+window.addEventListener("hashchange", route);
+route();
+})();
+</script>
+</body>
+</html>

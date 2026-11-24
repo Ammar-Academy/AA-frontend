@@ -58,5 +58,3 @@ firebase.initializeApp({
 // The backend sends `notification` payloads, which the SDK shows by itself
 // in the background; nothing else to do here.
 firebase.messaging();
-!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="10f47233-5285-5365-853c-90cfb508ff50")}catch(e){}}();
-//# debugId=10f47233-5285-5365-853c-90cfb508ff50
