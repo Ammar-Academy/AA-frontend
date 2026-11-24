@@ -740,6 +740,46 @@
       let currentVersion = null;
       let versionCheckInterval = null;
 
+      // A refresh is cut off by the app after 20 seconds, so a flag that is
+      // still up after this long was left behind.
+      const MAX_REFRESH_WAIT = 25 * 1000;
+      const RELOAD_FLAG_LIFETIME = 20 * 1000;
+
+      // Version waiting to be loaded, and whether something already waits
+      // to load it.
+      let pendingVersion = null;
+      let updateRunning = false;
+
+      // Attempts of Real Tests. The timer runs on while the page reloads, so an
+      // update waits until the student leaves. (/ielts-practice/ is a page of
+      // its own, without this script.)
+      function inTimedTest() {
+        return /^\/real-tests\/[^/]+\/attempt\//.test(
+          window.location.pathname,
+        );
+      }
+
+      // Waits until a reload costs the user nothing: no timed test is open and
+      // no token refresh is in flight. The backend rotates the refresh token
+      // while the request is in flight; leaving before the response arrives
+      // loses the new cookie and signs the user out. The app sets the flag
+      // (lib/core/api/page_reload).
+      async function waitForSafeMoment() {
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+        let refreshDeadline = null;
+        for (;;) {
+          if (inTimedTest()) {
+            refreshDeadline = null;
+            await sleep(2000);
+            continue;
+          }
+          if (!window.aaTokenRefreshInFlight) return;
+          refreshDeadline ??= Date.now() + MAX_REFRESH_WAIT;
+          if (Date.now() >= refreshDeadline) return;
+          await sleep(250);
+        }
+      }
+
       async function fetchCurrentVersion() {
         try {
           // Add timestamp to prevent caching
@@ -796,8 +836,11 @@
       }
 
       async function performSilentUpdate(versionData) {
-        // Update stored version
-        localStorage.setItem(VERSION_STORAGE_KEY, versionData.version);
+        pendingVersion = versionData.version;
+        if (updateRunning) return;
+        updateRunning = true;
+
+        await waitForSafeMoment();
 
         // reload(true) is ignored by modern browsers and does NOT bypass the
         // service worker or the HTTP cache. Tear both down explicitly, then
@@ -824,11 +867,24 @@
           console.warn("Cache teardown failed:", error);
         }
 
+        // The teardown took a moment: a refresh or a test may have started.
+        await waitForSafeMoment();
+
+        // No await from here on. The flag makes the app hold back new
+        // refreshes until the page is gone; it is cleared in case the
+        // navigation fails and the page stays.
+        window.aaPageReloading = true;
+        setTimeout(function () {
+          window.aaPageReloading = false;
+          updateRunning = false;
+        }, RELOAD_FLAG_LIFETIME);
+        localStorage.setItem(VERSION_STORAGE_KEY, pendingVersion);
+
         // Cache-busting query param forces a fresh document fetch even if the
         // host still hands out a cached index.html. It is stripped from the
         // address bar on the next load — see below.
         const url = new URL(window.location.href);
-        url.searchParams.set("v", versionData.version);
+        url.searchParams.set("v", pendingVersion);
         window.location.replace(url.toString());
       }
 
@@ -869,6 +925,6 @@
       });
     </script>
 
-    <script src="flutter_bootstrap.js?v=56" async></script>
+    <script src="flutter_bootstrap.js?v=57" async></script>
   </body>
 </html>
