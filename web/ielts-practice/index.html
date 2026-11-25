@@ -510,6 +510,8 @@ function player() {
   s.load = function (i) {
     if (i === loaded) return;
     audio.pause(); loaded = i; tries = 0;
+    // The new recording drops the pause event of the old one.
+    play.textContent = "Play";
     audio.src = s.content.parts[i].audio_url || "";
     show();
   };
