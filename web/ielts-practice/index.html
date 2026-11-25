@@ -8,7 +8,7 @@
 <title>IELTS tests | Ammar Academy</title>
 <link rel="icon" href="/favicon.ico">
 <!--
-  The IELTS exam screens: Reading and Listening. One file on purpose: nginx caches .js and .css for
+  The IELTS exam screens: Listening, Reading, Writing and Speaking. One file on purpose: nginx caches .js and .css for
   a year, and this page has to be able to change. It talks to /api/ielts/ with
   the site's own sign-in cookies.
 -->
@@ -32,6 +32,11 @@ h1,h2,h3,p{margin:0}a{color:var(--navy)}
 /* listening */
 .player{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:9px 14px;background:#fff;border-bottom:1px solid var(--line)}.player label{display:inline-flex;gap:6px;align-items:center;font-size:14px}.player input[type=range]{accent-color:var(--navy)}.player .seek{flex:1 1 180px;min-width:120px}.player .vol{width:90px}.player .time{font-variant-numeric:tabular-nums;white-space:nowrap}.player select{border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:#fff}.player progress{flex:1 1 160px;height:10px;accent-color:var(--navy)}
 .panes.one .text,.panes.one .divider{display:none}.panes.one .qs{padding-inline:max(22px,calc(50% - 400px))}
+/* writing and speaking */
+.essay{display:flex;flex-direction:column;gap:10px;min-height:100%}.essay textarea{flex:1;min-height:340px;width:100%;border:1px solid var(--muted);border-radius:10px;padding:14px 16px;font-size:1em;line-height:1.75;resize:vertical;background:#fff}.essay .count{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-variant-numeric:tabular-nums}.essay .text{white-space:pre-wrap;line-height:1.8;border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-wrap:anywhere}
+.speak{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px;display:grid;gap:12px;scroll-margin-top:16px}.speak .ask p{font-size:1.08em}.speak .ask.card{border-left:4px solid var(--orange);padding-left:14px}.speak .ask.card p+p{font-size:1em}.speak .acts{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap}.speak audio{width:100%;max-width:460px}.speak .state{color:var(--muted);font-variant-numeric:tabular-nums}.speak .state.bad{color:var(--bad)}
+.rec{display:inline-flex;gap:8px;align-items:center;font-weight:600;font-variant-numeric:tabular-nums}.rec::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--bad)}.rec.prep::before{background:var(--orange)}.level{width:110px;height:8px;border-radius:4px;background:var(--soft);overflow:hidden}.level i{display:block;height:100%;width:0;background:var(--ok)}
+.marks{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0 16px;display:grid;gap:8px}.marks dl{display:grid;grid-template-columns:1fr auto;gap:4px 16px;margin:0}.marks dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}.marks .say{white-space:pre-wrap;overflow-wrap:anywhere}
 /* exam */
 .exam{height:100%;display:flex;flex-direction:column}
 .bar{display:flex;align-items:center;gap:8px 14px;padding:8px 14px;background:var(--navy);color:#fff;flex-wrap:wrap}.bar .title{font-weight:600;flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -173,7 +178,9 @@ async function signIn() {
 
 /* ---------- home ---------- */
 var VARIANT = { academic: "Academic", general: "General Training" };
-var SKILL = { reading: "Reading", listening: "Listening" };
+var SKILL = { listening: "Listening", reading: "Reading", writing: "Writing", speaking: "Speaking" };
+function many(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
+function isHand(skill) { return skill === "writing" || skill === "speaking"; }
 var MODE = { practice: "Practice", simulation: "Simulation" };
 
 async function home() {
@@ -197,20 +204,21 @@ async function home() {
     data.exams.forEach(function (x) {
       x.skills.filter(function (k) { return k.skill === skill; }).forEach(function (k) {
         rows.push(h("div", { class: "row" },
-          h("div", {}, h("b", {}, x.title), h("p", {}, (skill === "reading" ? VARIANT[x.variant] + ", " : "") + k.question_count + " question" + (k.question_count === 1 ? "" : "s"))),
+          h("div", {}, h("b", {}, x.title), h("p", {}, (skill === "reading" || skill === "writing" ? VARIANT[x.variant] + ", " : "") + many(k.question_count, skill === "writing" ? "task" : "question"))),
           h("div", { class: "acts" }, x.modes.map(function (m, i) {
             return h("button", { class: "btn" + (i === 0 ? " main" : ""), onclick: function (e) { begin(x, k, m, e.currentTarget); } },
-              (k.open[m] ? "Continue " + MODE[m].toLowerCase() : MODE[m] + (m === "simulation" ? " (" + k.minutes + " min)" : "")));
+              (k.open[m] ? "Continue " + MODE[m].toLowerCase() : MODE[m] + (m === "simulation" || x.time_practice ? " (" + k.minutes + " min)" : "")));
           }))));
       });
     });
     return rows.length ? h("section", { class: "list" }, h("h2", {}, SKILL[skill]), rows) : null;
   }
-  var lists = ["listening", "reading"].map(tests).filter(Boolean);
+  var lists = Object.keys(SKILL).map(tests).filter(Boolean);
   var results = data.results.map(function (r) {
     return h("div", { class: "row" },
       h("div", {}, h("b", {}, r.title), h("p", {}, SKILL[r.skill] + ", " + MODE[r.mode].toLowerCase() + ", " + new Date(r.submitted_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }))),
-      h("span", { class: "score" }, r.score + " / " + r.total, r.band ? " · band " + (+r.band) + " (estimated)" : ""),
+      r.marking && r.marking !== "marked" ? h("span", {}, "Being marked") :
+      h("span", { class: "score" }, r.marking ? "Band " + (+r.band) + " (estimated)" : r.score + " / " + r.total, !r.marking && r.band ? " · band " + (+r.band) + " (estimated)" : ""),
       h("div", { class: "acts" }, h("button", { class: "btn small", onclick: function () { location.hash = "/attempt/" + r.id; } }, "Review")));
   });
   show(h("div", { class: "home" },
@@ -229,11 +237,18 @@ function beep() {
   } catch (e) { /* no sound here */ }
 }
 async function begin(exam, kind, mode, button) {
-  if (mode === "simulation" && !kind.open[mode]) {
-    var go = "test", listening = kind.skill === "listening";
+  var simulation = mode === "simulation";
+  if (kind.skill === "speaking" && !kind.open[mode] && !canRecord() && simulation) {
+    await dialog("This browser can’t record", "Open this page in Chrome, Edge or Safari to take the Speaking simulation. In practice you can also send a file.", [{ label: "OK", value: true, main: true }]);
+    return;
+  }
+  if ((simulation || exam.time_practice) && !kind.open[mode]) {
+    var go = "test", listening = kind.skill === "listening" && simulation;
     while (go === "test") {
-      go = await dialog("Start the simulation?", listening
+      go = await dialog(simulation ? "Start the simulation?" : "Start the practice?", listening
         ? "It takes about " + kind.minutes + " minutes. Each recording plays once and can’t be paused. Check your sound first."
+        : simulation && kind.skill === "speaking"
+        ? "It takes about " + kind.minutes + " minutes. Find a quiet place. You answer one question at a time, the recording stops when its time ends, and each answer is recorded once."
         : "You have " + kind.minutes + " minutes. The clock keeps running if you close the page, and your answers are submitted when it ends.",
         [{ label: "Not now", value: false }].concat(listening ? [{ label: "Play a test sound", value: "test" }] : [], [{ label: "Start", value: true, main: true }]));
       if (go === "test") beep();
@@ -263,7 +278,7 @@ function silence() {
 function stopExam() {
   if (!S) return;
   clearInterval(S.clock); clearTimeout(S.saveTimer);
-  silence();
+  silence(); endRecorder(true);
   if (S.dirty && !S.done) flush(true);
   S = null;
   closeTool();
@@ -300,6 +315,7 @@ async function setup(data) {
   S = {
     id: data.id, data: data, content: data.content, done: !!data.submitted_at, result: data.result,
     answers: Object.assign({}, data.answers), flags: new Set(w.flags || []), marks: w.marks || [], notes: w.notes || "",
+    skill: data.skill, hand: isHand(data.skill), review: data.review, recordings: data.recordings || {}, sending: {},
     listening: data.skill === "listening", timed: data.mode === "simulation", heard: data.heard || 0,
     part: 0, seq: 0, dirty: false, saving: false, lastSave: 0, retry: 0,
     offset: new Date(data.server_now).getTime() - Date.now(), deadline: data.deadline ? new Date(data.deadline).getTime() : null,
@@ -331,9 +347,9 @@ function tick() {
   var el = document.getElementById("timer");
   if (el) {
     // While the recordings play there is no clock to watch, as in the exam.
-    el.hidden = S.listening && !S.checkUntil;
+    el.hidden = S.listening && S.timed && !S.checkUntil;
     el.textContent = Math.floor(left / 60) + ":" + pad(left % 60);
-    el.classList.toggle("warn", left <= 600);
+    el.classList.toggle("warn", left <= (S.skill === "speaking" ? 60 : 600));
   }
   if (!S.listening) [600, 300].forEach(function (s) {
     if (left <= s && left > s - 5 && !S.warned[s]) { S.warned[s] = true; say(s / 60 + " minutes left"); }
@@ -415,12 +431,14 @@ async function submit(timeOver) {
   var s = S;
   if (!s || s.submitting) return;
   if (!timeOver) {
-    var left = allQuestions().filter(function (q) { return !answered(q); }).length;
-    var ok = await dialog("Submit your answers?", (left ? left + " question" + (left === 1 ? " has" : "s have") + " no full answer. " : "") + (S.listening && S.timed && !S.checkUntil ? "The recordings haven’t finished. " : "") + "You can’t change answers after submitting.", [{ label: "Keep working", value: false }, { label: "Submit", value: true, main: true }]);
+    var left = S.hand ? allTasks().filter(function (t) { return !taskDone(t); }).length : allQuestions().filter(function (q) { return !answered(q); }).length;
+    var ok = await dialog("Submit your answers?", (left ? many(left, S.skill === "writing" ? "task" : "question") + (left === 1 ? " has" : " have") + " no " + (S.hand ? "" : "full ") + "answer. " : "") + (S.listening && S.timed && !S.checkUntil ? "The recordings haven’t finished. " : "") + "You can’t change answers after submitting.", [{ label: "Keep working", value: false }, { label: "Submit", value: true, main: true }]);
     if (!ok || S !== s) return;
   }
   s.submitting = true;
   clearTimeout(s.saveTimer); s.saveTimer = null; clearInterval(s.clock);
+  if (s.skill === "speaking" && !(await allSent(s))) { s.submitting = false; if (S === s) s.clock = setInterval(tick, 500); return; }
+  if (S !== s) return;
   status("Submitting…");
   try {
     var data = await api("POST", "attempts/" + s.id + "/submit/", payload());
@@ -590,20 +608,24 @@ function render() {
     h("button", { class: "btn small", onclick: leave }, S.done ? "All tests" : "Leave"),
     h("span", { class: "title" }, d.title),
     S.done ? null : h("span", { id: "saved", class: "saved", role: "status" }, S.dirty ? "Saving…" : "Saved"),
-    S.deadline && !S.done ? h("span", { hidden: S.listening, id: "timer", class: "timer", role: "timer" }) : null,
-    S.listening && !S.done ? null : h("button", { class: "btn small swap", id: "swap", onclick: swap }, textName()),
+    S.deadline && !S.done ? h("span", { hidden: S.listening && S.timed, id: "timer", class: "timer", role: "timer" }) : null,
+    (S.listening && !S.done) || S.skill === "speaking" ? null : h("button", { class: "btn small swap", id: "swap", onclick: swap }, S.skill === "writing" && !S.done ? "Answer" : textName()),
     h("button", { class: "btn small", "aria-label": "Smaller text", onclick: function () { resize(-1); } }, "A−"),
     h("button", { class: "btn small", "aria-label": "Larger text", onclick: function () { resize(1); } }, "A+"),
     h("button", { class: "btn small", id: "notesbtn", "aria-pressed": "false", onclick: toggleNotes }, "Notes"),
     S.done ? null : h("button", { class: "btn small", id: "submit", onclick: function () { submit(false); } }, "Submit"));
   var res = null;
-  if (S.done) {
+  if (S.done && S.hand) {
+    res = h("div", { class: "result" }, S.review
+      ? h("div", {}, h("span", { class: "big" }, String(+S.review.band)), h("small", {}, "estimated band"))
+      : h("div", {}, h("b", {}, "Submitted. A teacher marks this."), h("small", {}, "You get a notification when the marks are ready.")));
+  } else if (S.done) {
     res = h("div", { class: "result" },
       h("div", {}, h("span", { class: "big" }, d.score + " / " + d.total), h("small", {}, "correct")),
       d.band ? h("div", {}, h("span", { class: "big" }, String(+d.band)), h("small", {}, "estimated band")) : null,
       h("div", { class: "types" }, S.result.by_type.map(function (t) { return h("span", {}, t.label + ": " + t.right + "/" + t.total); })));
   }
-  var panes = h("div", { class: "panes" + (S.listening && !S.done ? " one" : ""), "data-show": "qs", id: "panes" },
+  var panes = h("div", { class: "panes" + ((S.listening && !S.done) || S.skill === "speaking" ? " one" : ""), "data-show": S.skill === "writing" && !S.done ? "text" : "qs", id: "panes" },
     h("div", { class: "pane text", id: "text", tabindex: "0", "aria-label": textName() }), divider(),
     h("div", { class: "pane qs", id: "qs", tabindex: "0", "aria-label": "Questions" }));
   var one = S.content.parts.length < 2;
@@ -625,12 +647,24 @@ async function leave() {
   }
   location.hash = "";
 }
-function textName() { return S.listening ? "Transcript" : "Passage"; }
-function partName(i) { return (S.listening ? "Part " : "Passage ") + (i + 1); }
+function textName() { return S.listening ? "Transcript" : S.skill === "writing" ? "Task" : "Passage"; }
+function partName(i) { return (S.skill === "reading" ? "Passage " : S.skill === "writing" ? "Task " : "Part ") + (i + 1); }
+function reached() {
+  var i = S.content.parts.findIndex(function (p) { return p.tasks.some(function (t) { return !taskDone(t); }); });
+  return i < 0 ? S.content.parts.length - 1 : i;
+}
+function allTasks() {
+  var out = [];
+  S.content.parts.forEach(function (p) { (p.tasks || []).forEach(function (t) { out.push(t); }); });
+  return out;
+}
+function taskDone(t) {
+  return S.skill === "speaking" ? !!(S.recordings[t.number] || S.sending[t.number]) : !!(S.answers[t.number] || "").trim();
+}
 function swap() {
   var p = document.getElementById("panes"), next = p.dataset.show === "qs" ? "text" : "qs";
   p.dataset.show = next;
-  document.getElementById("swap").textContent = next === "qs" ? textName() : "Questions";
+  document.getElementById("swap").textContent = next === "qs" ? textName() : S.skill === "writing" ? "Answer" : "Questions";
 }
 function showPane(name) {
   var p = document.getElementById("panes");
@@ -664,11 +698,13 @@ function divider() {
 
 function go(index, number) {
   var parts = S.content.parts;
-  S.part = Math.min(parts.length - 1, Math.max(0, index));
+  // Speaking simulation: the questions ahead stay unseen.
+  var last = S.skill === "speaking" && S.timed && !S.done ? reached() : parts.length - 1;
+  S.part = Math.min(last, Math.max(0, index));
   passage(); questions(); numbers();
   if (S.load) S.load(S.part);
   document.getElementById("prev").disabled = S.part === 0;
-  document.getElementById("next").disabled = S.part === parts.length - 1;
+  document.getElementById("next").disabled = S.part === last;
   if (!number) { document.getElementById("text").scrollTop = 0; document.getElementById("qs").scrollTop = 0; }
 }
 function goTo(number, part) {
@@ -677,7 +713,7 @@ function goTo(number, part) {
   if (!el) return;
   showPane(el.closest("#text") ? "text" : "qs");
   el.scrollIntoView({ block: "center" });
-  var field = el.matches("input,select") ? el : el.querySelector("input,select,button.up");
+  var field = el.matches("input,select,textarea") ? el : el.querySelector("input,select,textarea,button.up,.acts button");
   if (field) field.focus({ preventScroll: true });
 }
 
@@ -685,6 +721,10 @@ function numbers() {
   var box = document.getElementById("nums");
   var kids = S.content.parts.map(function (p, pi) {
     var row = h("div", {}, h("button", { class: "p", "aria-current": String(pi === S.part), onclick: function () { go(pi); } }, partName(pi)));
+    if (S.skill === "speaking") p.tasks.forEach(function (t) {
+      var done = taskDone(t);
+      row.append(h("button", { class: "num" + (done ? " done" : ""), "aria-label": "Question " + t.number + (done ? ", answered" : ""), onclick: function () { goTo(t.number, pi); } }, String(t.number)));
+    });
     p.groups.forEach(function (g) {
       g.questions.forEach(function (q) {
         for (var i = 0; i < q.span; i++) {
@@ -828,6 +868,7 @@ function drawNotes() {
 /* ---------- questions ---------- */
 function questions() {
   var p = S.content.parts[S.part], box = document.getElementById("qs");
+  if (S.hand) { box.replaceChildren.apply(box, S.skill === "writing" ? essay(p) : speaking(p)); return; }
   var kids = p.groups.map(group);
   if (S.listening) kids.unshift(h("h2", {}, partName(S.part) + (p.title ? ": " + p.title : "")));
   box.replaceChildren.apply(box, kids);
@@ -968,6 +1009,252 @@ function key(g, q) {
   return h("div", { class: "key " + (full ? "ok" : "bad") },
     h("b", {}, q.number + (full ? " Correct. " : " " + (r.right ? r.right + " of " + q.span + " correct. " : "Wrong. "))), full ? null : "Answer: " + shown + (/[.?!]$/.test(shown) ? "" : "."),
     r.note ? h("div", { class: "note" }, r.note) : null);
+}
+
+/* ---------- marks of writing and speaking ---------- */
+function marksOf(key, title) {
+  var part = S.review && S.review.parts.find(function (x) { return x.key === String(key); });
+  if (!part) return null;
+  var rows = [];
+  part.criteria.forEach(function (c) { rows.push(h("dt", {}, c.label), h("dd", {}, String(+c.band))); });
+  return h("section", { class: "marks" }, h("h3", {}, title + ": band " + (+part.band)), h("dl", {}, rows), part.comment ? h("p", { class: "say", dir: "auto" }, part.comment) : null);
+}
+
+/* ---------- writing ---------- */
+function words(text) { var w = (text || "").trim(); return w ? w.split(/\s+/).length : 0; }
+function essay(p) {
+  var t = p.tasks[0], text = S.answers[t.number] || "";
+  if (S.done) return [h("div", { class: "essay" }, h("div", { class: "count" }, h("b", {}, "Your answer"), many(words(text), "word")), text ? h("div", { class: "text", dir: "auto" }, text) : h("p", { class: "ins" }, "No answer.")), marksOf(t.number, "Task " + t.number)].filter(Boolean);
+  var count = h("span", {});
+  function tell() {
+    var n = words(S.answers[t.number]);
+    count.textContent = many(n, "word") + (t.min_words && n < t.min_words ? ", " + (t.min_words - n) + " to go" : "");
+  }
+  var field = h("textarea", { id: "q" + t.number, "aria-label": "Your answer to task " + t.number, maxlength: "20000", spellcheck: "false", autocomplete: "off", autocapitalize: "sentences", dir: "auto", value: text, oninput: function () { set(t.number, field.value); tell(); } });
+  tell();
+  return [h("div", { class: "essay" }, field, h("div", { class: "count" }, count, t.min_words ? "Write at least " + t.min_words + " words." : ""))];
+}
+
+/* ---------- speaking ---------- */
+function canRecord() { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+function kindToRecord() {
+  return ["audio/mp4;codecs=mp4a.40.2", "audio/mp4", "audio/webm;codecs=opus", "audio/webm", "audio/ogg"].find(function (k) { return MediaRecorder.isTypeSupported(k); }) || "";
+}
+var R = null; // the answer being prepared or recorded
+var asking = false;
+var LONGEST = 600; // seconds, in practice
+
+function endRecorder(drop) {
+  var r = R;
+  if (!r) return;
+  R = null;
+  clearInterval(r.clock);
+  if (r.meter) cancelAnimationFrame(r.meter);
+  if (r.sound) r.sound.close().catch(function () {});
+  if (r.rec && r.rec.state !== "inactive") {
+    if (drop) r.rec.onstop = null;
+    r.rec.stop();
+  }
+  if (r.stream) r.stream.getTracks().forEach(function (t) { t.stop(); });
+}
+async function microphone() {
+  try {
+    return await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+  } catch (e) {
+    await dialog("The microphone isn’t available", e && e.name === "NotAllowedError" ? "Allow the microphone for this site in your browser, then try again." : "Check that a microphone is connected and that no other app is using it.", [{ label: "OK", value: true, main: true }]);
+    return null;
+  }
+}
+// Prepare (if the question has time for it), then record.
+async function startAnswer(t, auto) {
+  var s = S;
+  if (R || asking || !s || s.done) return;
+  asking = true;
+  var stream = await microphone();
+  asking = false;
+  if (!stream) return;
+  if (S !== s || R) { stream.getTracks().forEach(function (x) { x.stop(); }); return; }
+  var r = R = { t: t, s: s, stream: stream, auto: auto };
+  if (auto && t.prep_seconds) {
+    r.until = Date.now() + t.prep_seconds * 1000;
+    r.clock = setInterval(function () {
+      if (R !== r) return;
+      if (Date.now() >= r.until) record(r); else tellTime(r);
+    }, 250);
+    paintAnswer(t);
+  } else record(r);
+}
+function record(r) {
+  if (R !== r || r.rec) return;
+  clearInterval(r.clock);
+  var t = r.t, s = r.s, kind = kindToRecord(), pieces = [];
+  try { r.rec = new MediaRecorder(r.stream, kind ? { mimeType: kind, audioBitsPerSecond: 64000 } : undefined); }
+  catch (e) { r.rec = new MediaRecorder(r.stream); }
+  r.began = Date.now();
+  r.rec.ondataavailable = function (e) { if (e.data && e.data.size) pieces.push(e.data); };
+  r.rec.onstop = function () {
+    var seconds = Math.max(1, Math.round((r.ended - r.began) / 1000));
+    if (pieces.length) sendAnswer(s, t, new Blob(pieces, { type: r.rec.mimeType || kind }), seconds);
+    else if (S === s) { paintAnswer(t); dialog("Nothing was recorded", "Try again.", [{ label: "OK", value: true, main: true }]); }
+  };
+  // A device that is unplugged, or a call on a phone, ends the recording.
+  r.stream.getTracks().forEach(function (x) { x.onended = function () { if (R === r) stopAnswer(); }; });
+  r.rec.start(1000);
+  if (r.auto) beep();
+  meter(r);
+  r.clock = setInterval(function () {
+    if (R !== r) return;
+    var limit = r.auto ? t.answer_seconds : LONGEST;
+    if ((Date.now() - r.began) / 1000 >= limit) stopAnswer(); else tellTime(r);
+  }, 250);
+  paintAnswer(t);
+}
+function meter(r) {
+  try {
+    r.sound = new (window.AudioContext || window.webkitAudioContext)();
+    var node = r.sound.createAnalyser(), data = new Uint8Array(256);
+    node.fftSize = 256;
+    r.sound.createMediaStreamSource(r.stream).connect(node);
+    (function look() {
+      if (R !== r) return;
+      node.getByteTimeDomainData(data);
+      var most = 0;
+      data.forEach(function (v) { most = Math.max(most, Math.abs(v - 128)); });
+      var bar = document.querySelector(".level i");
+      if (bar) bar.style.width = Math.min(100, most * 2) + "%";
+      r.meter = requestAnimationFrame(look);
+    })();
+  } catch (e) { /* no meter here */ }
+}
+function stopAnswer() {
+  var r = R;
+  if (!r) return;
+  if (!r.rec) { record(r); return; } // was preparing: start speaking
+  r.ended = Date.now();
+  endRecorder(false);
+}
+var REFUSED = {
+  too_large: "The file is larger than 15 MB.", not_sound: "This isn’t a sound file we can play. Send MP3, M4A, WAV or OGG.",
+  too_many_recordings: "Your recordings take too much space. Ask the academy to clear old ones.", storage_off: "Recordings can’t be kept now. Tell the academy."
+};
+async function sendAnswer(s, t, blob, seconds) {
+  var job = s.sending[t.number] = { blob: blob, seconds: seconds, failed: false };
+  if (S === s) { paintAnswer(t); numbers(); }
+  var tries = 0;
+  while (s.sending[t.number] === job) {
+    var form = new FormData(), res = null, data = null;
+    form.append("writer", writer); form.append("seconds", String(seconds)); form.append("file", blob, "answer");
+    try {
+      var path = API + "attempts/" + s.id + "/recordings/" + t.number + "/";
+      res = await fetch(path, { method: "POST", credentials: "same-origin", body: form });
+      if (res.status === 401) { await refresh(); res = await fetch(path, { method: "POST", credentials: "same-origin", body: form }); }
+      data = await res.json().catch(function () { return {}; });
+    } catch (e) { res = null; }
+    if (res && res.ok) {
+      s.recordings[t.number] = data; delete s.sending[t.number];
+      break;
+    }
+    var code = data && data.code;
+    if (res && res.status === 401) { if (S === s) await signIn(); continue; }
+    if (code === "already_recorded") { s.recordings[t.number] = { url: "", seconds: seconds }; delete s.sending[t.number]; break; }
+    if (code === "opened_elsewhere" || code === "submitted" || code === "time_over") {
+      delete s.sending[t.number];
+      if (S === s) { if (code === "opened_elsewhere") conflict(code); else openAttempt(s.id); }
+      return;
+    }
+    if (REFUSED[code] || (res && res.status >= 400 && res.status < 500)) {
+      delete s.sending[t.number];
+      if (S === s) { paintAnswer(t); numbers(); await dialog("The answer wasn’t sent", REFUSED[code] || "Try again.", [{ label: "OK", value: true, main: true }]); }
+      return;
+    }
+    tries++; job.failed = true;
+    if (S === s) paintAnswer(t);
+    await new Promise(function (ok) { setTimeout(ok, Math.min(20000, 2000 * tries)); });
+  }
+  if (S === s) { if (s.timed) go(S.part, t.number); else { paintAnswer(t); numbers(); } }
+}
+// Before submitting: nothing may still be recording or on its way.
+async function allSent(s) {
+  if (R) stopAnswer();
+  await new Promise(function (ok) { setTimeout(ok, 300); });
+  var started = Date.now();
+  while (Object.keys(s.sending).length) {
+    if (S !== s) return false;
+    status("Sending your answers…");
+    if (Date.now() - started > 60000) {
+      var wait = await dialog("Some answers aren’t sent yet", "Check your connection. If you submit now, those answers are lost.", [{ label: "Submit anyway", value: false }, { label: "Keep trying", value: true, main: true }]);
+      if (!wait) { s.sending = {}; break; }
+      started = Date.now();
+    }
+    await new Promise(function (ok) { setTimeout(ok, 500); });
+  }
+  return S === s;
+}
+window.addEventListener("beforeunload", function (e) {
+  if (S && !S.done && (R || Object.keys(S.sending || {}).length)) { e.preventDefault(); e.returnValue = ""; }
+});
+
+function timeOf(r) {
+  var gone = r.rec ? (Date.now() - r.began) / 1000 : 0, t = r.t;
+  if (!r.rec) return "Prepare, " + clock(Math.ceil(Math.max(0, (r.until - Date.now()) / 1000)));
+  if (r.auto) return "Recording, " + clock(Math.ceil(Math.max(0, t.answer_seconds - gone))) + " left";
+  return "Recording " + clock(gone) + " of " + clock(t.answer_seconds);
+}
+// Only the words: replacing the buttons every moment would lose a click on them.
+function tellTime(r) {
+  var el = document.querySelector("#q" + r.t.number + " .rec");
+  if (el) el.textContent = timeOf(r);
+}
+function ask(t) { return h("div", { class: "ask" + (t.style === "card" ? " card" : "") }, t.prompt.map(function (x) { return h("p", {}, x); })); }
+function limits(t) { return (t.prep_seconds ? clock(t.prep_seconds) + " to prepare, " : "") + clock(t.answer_seconds) + " to answer"; }
+function answerBox(t) {
+  var box = h("section", { class: "speak", id: "q" + t.number, "aria-label": "Question " + t.number }), kids = [], acts = [];
+  var r = R && R.t === t ? R : null, job = S.sending[t.number], got = S.recordings[t.number];
+  kids.push(h("div", { class: "qp" }, h("span", { class: "n" }, String(t.number)), ask(t)));
+  if (S.done) {
+    kids.push(got ? h("audio", { controls: true, preload: "none", src: got.url }) : h("p", { class: "ins" }, "No answer."));
+  } else if (r) {
+    acts.push(h("span", { class: "rec" + (r.rec ? "" : " prep"), role: "timer" }, timeOf(r)),
+      r.rec ? h("span", { class: "level", "aria-hidden": "true" }, h("i", {})) : null,
+      h("button", { class: "btn main", onclick: stopAnswer }, r.rec ? "Stop" : "Start speaking"));
+  } else if (job) {
+    acts.push(h("span", { class: "state" + (job.failed ? " bad" : ""), role: "status" }, job.failed ? "Not sent yet, trying again…" : "Sending your answer…"));
+  } else if (S.timed) {
+    acts.push(got ? h("span", { class: "state" }, "Recorded, " + clock(got.seconds)) : h("button", { class: "btn main", disabled: !!R, onclick: function () { startAnswer(t, true); } }, "Start"), got ? null : h("span", { class: "state" }, limits(t)));
+  } else {
+    if (got && got.url) kids.push(h("audio", { controls: true, preload: "none", src: got.url }));
+    if (canRecord()) acts.push(h("button", { class: "btn" + (got ? "" : " main"), disabled: !!R, onclick: function () { startAnswer(t, false); } }, got ? "Record again" : "Record"));
+    var file = h("input", { type: "file", accept: "audio/*,.m4a,.mp3,.wav,.ogg,.webm", hidden: true, onchange: function () { if (file.files[0]) sendAnswer(S, t, file.files[0], 0); } });
+    acts.push(h("button", { class: "btn", disabled: !!R, onclick: function () { file.click(); } }, got ? "Send another file" : "Send a file"), file, h("span", { class: "state" }, limits(t)));
+  }
+  if (acts.length) kids.push(h("div", { class: "acts" }, acts));
+  add(box, kids);
+  return box;
+}
+function paintAnswer(t) {
+  var old = document.getElementById("q" + t.number);
+  if (!old || !S) return;
+  var had = old.contains(document.activeElement);
+  var bar = old.querySelector(".level i"), fresh = answerBox(t), next = fresh.querySelector(".level i");
+  if (bar && next) next.style.width = bar.style.width;
+  old.replaceWith(fresh);
+  var to = had && fresh.querySelector(".acts button:not(:disabled)");
+  if (to) to.focus({ preventScroll: true });
+}
+function speaking(p) {
+  var kids = [h("h2", {}, partName(S.part) + (p.title ? ": " + p.title : "")), p.image ? h("img", { src: p.image, alt: "" }) : null];
+  var tasks = p.tasks, after = [];
+  if (S.timed && !S.done) {
+    // One question at a time, as with an examiner.
+    var now = tasks.find(function (t) { return (R && R.t === t) || S.sending[t.number] || !S.recordings[t.number]; });
+    tasks = tasks.filter(function (t) { return S.recordings[t.number] && t !== now; }).concat(now ? [now] : []);
+    if (!now) after = S.part < S.content.parts.length - 1
+      ? [h("p", { class: "ins" }, "This part is done."), h("p", {}, h("button", { class: "btn main", onclick: function () { go(S.part + 1); } }, "Next part"))]
+      : [h("p", { class: "ins" }, "All parts are done. Submit when you are ready.")];
+  }
+  if (S.done && S.part === 0 && S.review) kids.push(marksOf("all", "Speaking"));
+  kids = kids.concat(tasks.map(answerBox), after);
+  return kids.filter(Boolean);
 }
 
 /* ---------- routing ---------- */
