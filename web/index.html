@@ -15,6 +15,19 @@
   the `--base-href` argument provided to `flutter build`.
 -->
     <base href="/" />
+    <!-- AA-HOME: the bare homepage URL shows the static homepage (in <body>); every other path boots the app. -->
+    <script>
+      window.aaHome = location.pathname === "/" || location.pathname === "/index.html";
+      if (window.aaHome) {
+        document.documentElement.classList.add("aa-home");
+        document.documentElement.setAttribute("lang", "ar");
+        var aaFont = document.createElement("link");
+        aaFont.rel = "stylesheet";
+        aaFont.href = "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Montserrat:wght@800;900&display=swap";
+        document.head.appendChild(aaFont);
+      }
+    </script>
+    <style>html.aa-home #splash-screen{display:none!important}</style>
 
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
@@ -405,6 +418,377 @@
     </script>
   </head>
   <body>
+<!-- AA-HOME:START — the homepage shown at ammar-academy.com/ (any other path boots the Flutter app) -->
+<template id="aa-home-tpl">
+<style>
+#aa-home{--navy:#0E0F3B;--ink:#2B2C4F;--muted:#55567A;--line:#E4E5EE;--cream:#F4F2EC;--orange:#F7931E;--orange-dk:#B35F00;--orange-tint:#FFF1DF;--red:#CC2229;--red-dk:#A3161D;--red-tint:#FDECEC;--green:#0E7A3C;
+  font-family:Cairo,Tahoma,Arial,sans-serif;color:var(--navy);background:#fff;line-height:1.6;direction:rtl;text-align:right;-webkit-font-smoothing:antialiased}
+#aa-home *{box-sizing:border-box}
+#aa-home a{color:inherit;text-decoration:none}
+#aa-home img,#aa-home video{max-width:100%;display:block}
+#aa-home .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+#aa-home .en{font-family:Montserrat,Cairo,sans-serif}
+#aa-home .ltr{direction:ltr;unicode-bidi:isolate}
+#aa-home h1,#aa-home h2,#aa-home h3,#aa-home p{margin:0}
+#aa-home .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:17px;padding:14px 24px;border-radius:14px;min-height:48px;transition:transform .2s ease,filter .2s ease}
+#aa-home .btn:hover{transform:translateY(-2px);filter:brightness(1.04)}
+#aa-home .b-orange{background:var(--orange);color:var(--navy)}
+#aa-home .b-red{background:var(--red);color:#fff}
+#aa-home .b-navy{background:var(--navy);color:#fff}
+#aa-home .b-green{background:var(--green);color:#fff}
+#aa-home .b-line{background:#fff;border:2px solid var(--line);color:var(--navy)}
+/* header */
+#aa-home .top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:saturate(1.4) blur(6px)}
+#aa-home .top .wrap{display:flex;align-items:center;gap:22px;padding-top:10px;padding-bottom:10px}
+#aa-home .top .logo img{height:46px;width:auto}
+#aa-home .nav{display:flex;gap:20px;font-weight:700;font-size:15.5px;flex:1;align-items:center;flex-wrap:wrap}
+#aa-home .nav a:hover{color:var(--orange-dk)}
+#aa-home .vocab-tab{display:inline-flex;align-items:center;gap:6px;background:var(--orange-tint);color:var(--orange-dk)!important;padding:5px 12px;border-radius:10px}
+#aa-home .vocab-tab small{background:var(--orange);color:var(--navy);font-size:11px;font-weight:800;padding:1px 7px;border-radius:6px}
+#aa-home .top .btn{font-size:15px;padding:10px 18px;min-height:44px}
+#aa-home .menu-btn{display:none;background:none;border:2px solid var(--line);border-radius:12px;width:46px;height:46px;align-items:center;justify-content:center;cursor:pointer;color:var(--navy)}
+@media (max-width:980px){
+  #aa-home .nav{display:none;position:absolute;top:100%;right:0;left:0;background:#fff;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;gap:0;padding:8px 20px 16px}
+  #aa-home .nav a{padding:12px 0;border-bottom:1px solid var(--line)}
+  #aa-home .nav .vocab-tab{justify-content:center;margin-top:10px;border:0;padding:12px}
+  #aa-home .top.open .nav{display:flex}
+  #aa-home .menu-btn{display:inline-flex}
+  #aa-home .top .wrap{gap:10px}
+  #aa-home .top .logo{flex:1}
+  #aa-home .top .free{display:none}
+}
+/* hero */
+#aa-home .hero{background:var(--cream)}
+#aa-home .hero .wrap{display:flex;gap:44px;align-items:center;padding-top:56px;padding-bottom:56px;flex-wrap:wrap}
+#aa-home .hero-txt{flex:1 1 520px;display:flex;flex-direction:column;gap:18px}
+#aa-home .pill{align-self:flex-start;background:var(--orange-tint);color:var(--orange-dk);font-weight:800;font-size:14.5px;padding:7px 16px;border-radius:999px}
+#aa-home h1{font-size:clamp(30px,4.4vw,50px);line-height:1.3;font-weight:900}
+#aa-home .hl-o{background:linear-gradient(transparent 58%,#FBD3A0 58%)}
+#aa-home .hl-r{background:linear-gradient(transparent 58%,#F6C4C6 58%)}
+#aa-home .lead{font-size:19px;line-height:1.8;color:var(--muted)}
+#aa-home .row{display:flex;gap:12px;flex-wrap:wrap}
+#aa-home .chip{background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px 16px;min-width:110px}
+#aa-home .chip b{font-family:Montserrat,sans-serif;font-size:25px;display:block;line-height:1.2}
+#aa-home .chip span{font-size:13px;color:var(--muted)}
+#aa-home .hero-vid{flex:0 1 330px;margin:0 auto}
+/* videos */
+#aa-home .vid{position:relative;border-radius:22px;overflow:hidden;background:#000;aspect-ratio:9/16;box-shadow:0 18px 44px rgba(14,15,59,.16)}
+#aa-home .vid video{width:100%;height:100%;object-fit:cover}
+#aa-home .vid .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:transparent;border:0;cursor:pointer;width:100%}
+#aa-home .vid .play span{width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.93);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:transform .2s}
+#aa-home .vid .play:hover span{transform:scale(1.08)}
+#aa-home .vid.on .play{display:none}
+#aa-home .cap{margin-top:10px;font-weight:800;text-align:center}
+/* numbers strip */
+#aa-home .nums{padding:52px 0;border-bottom:1px solid var(--line);direction:ltr;text-align:left}
+#aa-home .nums .wrap{display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+#aa-home .nums h2{flex:1 1 420px;font-family:Montserrat,sans-serif;font-size:clamp(24px,2.6vw,33px);line-height:1.3;font-weight:900}
+#aa-home .nums h2 em{color:var(--orange);font-style:normal}
+#aa-home .nums ul{flex:1 1 540px;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 28px}
+#aa-home .nums li{display:flex;align-items:center;gap:12px;font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(17px,1.7vw,21px);transition:transform .2s}
+#aa-home .nums li:hover{transform:translateY(-4px)}
+#aa-home .nums svg{flex:none}
+/* sections */
+#aa-home .sec{padding:68px 0}
+#aa-home .head{text-align:center;margin-bottom:30px}
+#aa-home .head h2{font-size:clamp(26px,3vw,37px);font-weight:900;margin-bottom:8px}
+#aa-home .head p{font-size:17.5px;color:var(--muted)}
+#aa-home .navy{background:var(--navy);color:#fff}
+#aa-home .navy .head p{color:rgba(255,255,255,.75)}
+/* packages */
+#aa-home .pkgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:24px}
+#aa-home .pkg{border:2px solid var(--orange);background:#FFFBF5;border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:16px;transition:transform .25s ease,box-shadow .25s ease}
+#aa-home .pkg:hover{transform:translateY(-8px);box-shadow:0 22px 48px rgba(14,15,59,.16)}
+#aa-home .pkg .go{margin-top:auto;transition:transform .25s ease}
+#aa-home .pkg:hover .go{transform:scale(1.03)}
+#aa-home .pkg.ielts{border-color:var(--red);background:#FFF8F8}
+#aa-home .pkg-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#aa-home .pkg-name{font-family:Montserrat,sans-serif;font-weight:900;font-size:38px;direction:ltr}
+#aa-home .pkg-name i{font-style:normal;color:var(--orange-dk)}
+#aa-home .tag{font-weight:800;font-size:13.5px;padding:6px 14px;border-radius:999px;background:var(--orange-tint);color:var(--orange-dk)}
+#aa-home .ielts .tag{background:var(--red-tint);color:var(--red-dk)}
+#aa-home .pkg p{font-size:17px;color:var(--muted)}
+#aa-home .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#aa-home .stats div{background:var(--orange-tint);border-radius:14px;padding:11px 12px}
+#aa-home .ielts .stats div{background:var(--red-tint)}
+#aa-home .stats b{font-family:Montserrat,sans-serif;font-size:23px;color:var(--orange-dk);display:block;direction:ltr;text-align:right}
+#aa-home .ielts .stats b{color:var(--red-dk)}
+#aa-home .stats span{font-size:13.5px;font-weight:700}
+#aa-home .pkg ul{margin:0;padding:0 20px 0 0;font-size:16.5px;line-height:2;font-weight:600}
+/* results */
+#aa-home .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;align-items:start}
+#aa-home .shots figure{margin:0;background:#fff;border-radius:18px;padding:10px}
+#aa-home .shots img{width:100%;border-radius:10px}
+#aa-home .shots figcaption{color:var(--navy);font-weight:800;padding:8px 4px 2px}
+/* reviews */
+#aa-home .vids{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+#aa-home .vids figure{margin:0;flex:0 1 240px}
+#aa-home .voice{margin-top:24px;display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;background:var(--red-tint);border-radius:20px;padding:20px}
+#aa-home .voice .vid{aspect-ratio:16/9.5;width:320px;max-width:100%;box-shadow:none;border-radius:14px}
+#aa-home .voice p{font-size:18px;font-weight:700;flex:1 1 260px}
+/* vocab */
+#aa-home .vocab{background:var(--navy);color:#fff;border-radius:28px;padding:38px;display:flex;gap:30px;align-items:center;flex-wrap:wrap}
+#aa-home .vocab-txt{flex:1 1 440px;display:flex;flex-direction:column;gap:14px}
+#aa-home .vocab .pill{background:var(--orange);color:var(--navy)}
+#aa-home .vocab h2{font-size:clamp(26px,3vw,37px);font-weight:900}
+#aa-home .vocab p{font-size:18px;line-height:1.8;color:rgba(255,255,255,.8)}
+#aa-home .vocab-cards{flex:0 1 360px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#aa-home .vocab-cards div{background:rgba(255,255,255,.08);border-radius:16px;padding:16px}
+#aa-home .vocab-cards b{font-family:Montserrat,sans-serif;font-size:32px;color:var(--orange);display:block}
+#aa-home .vocab-cards .wide{grid-column:span 2}
+#aa-home .vocab-cards .wide b{font-size:22px;color:#fff;direction:ltr;text-align:left}
+/* students + final */
+#aa-home .students{background:var(--cream);padding:48px 0}
+#aa-home .students .wrap{display:flex;gap:22px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#aa-home .students h2{font-size:29px;font-weight:900;margin-bottom:4px}
+#aa-home .students p{color:var(--muted);font-size:17px}
+#aa-home .final{text-align:center}
+#aa-home .final h2{font-size:clamp(26px,3vw,37px);font-weight:900;margin-bottom:20px}
+#aa-home .final .row{justify-content:center}
+#aa-home footer{background:var(--navy);color:rgba(255,255,255,.8);padding:32px 0;font-size:15px}
+#aa-home footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
+#aa-home footer a{color:#fff}
+#aa-home footer nav{display:flex;gap:18px;flex-wrap:wrap}
+@media (max-width:600px){
+  #aa-home .hero .wrap{padding-top:32px;padding-bottom:40px;gap:28px}
+  #aa-home .hero-vid{flex-basis:260px;max-width:260px}
+  #aa-home .sec{padding:48px 0}
+  #aa-home .pkg{padding:22px}
+  #aa-home .pkg-name{font-size:32px}
+  #aa-home .nums ul{grid-template-columns:1fr 1fr;gap:14px 12px}
+  #aa-home .vocab{padding:26px}
+  #aa-home .vids figure{flex-basis:calc(50% - 10px)}
+  #aa-home .btn{width:100%}
+  #aa-home .top .btn{width:auto}
+  #aa-home .row .btn{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:reduce){#aa-home *{transition:none!important}}
+</style>
+<div id="aa-home">
+<header class="top" id="aa-top">
+<div class="wrap">
+<a class="logo" href="/" aria-label="Ammar Academy"><img src="/sat/img/logo.png" alt="Ammar Academy" width="80" height="46"></a>
+<nav class="nav" id="aa-nav" aria-label="القائمة">
+<a href="#sat">كورسات SAT وEST</a>
+<a href="#ielts">كورسات IELTS</a>
+<a href="#results">النتايج</a>
+<a href="#reviews">آراء الطلاب</a>
+<a class="vocab-tab" href="/vocabulary/"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></g></svg><span class="ltr">Vocabulary Game</span><small>مجاناً</small></a>
+</nav>
+<a class="btn b-line" href="/login" data-auth-link>Log in</a>
+<a class="btn b-orange free" href="#choose">Free Session</a>
+<button class="menu-btn" type="button" aria-label="افتح القائمة" aria-expanded="false" aria-controls="aa-nav" data-menu><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+</div>
+</header>
+
+<main>
+<section class="hero">
+<div class="wrap">
+<div class="hero-txt">
+<span class="pill">SAT · EST · IELTS — أونلاين من أي مكان</span>
+<h1>طلابنا جابوا <span class="hl-o"><span class="ltr">+1500</span> في الـSAT</span> و<span class="hl-r">Band 8.5 في الـIELTS</span>… والدور عليك</h1>
+<p class="lead">خطة واضحة من أول يوم لحد يوم الامتحان، تصحيح لكل حاجة بتكتبها، ومتابعة أسبوعية تعرف منها انت واقف فين بالظبط.</p>
+<div class="row">
+<a class="btn b-orange" href="#sat">أنا عايز SAT / EST</a>
+<a class="btn b-red" href="#ielts">أنا عايز IELTS</a>
+</div>
+<div class="row">
+<div class="chip"><b>1590</b><span>أعلى سكور — SAT</span></div>
+<div class="chip"><b class="ltr">+1500</b><span>طلاب كتير — SAT</span></div>
+<div class="chip"><b>8.0</b><span>أحمد ياسر — IELTS</span></div>
+<div class="chip"><b>9.0</b><span>Listening — IELTS</span></div>
+</div>
+</div>
+<figure class="hero-vid" style="margin:0">
+<div class="vid"><video src="/sat/video/about.mp4" poster="/sat/video/about.jpg" preload="none" playsinline></video><button class="play" type="button" aria-label="شغّل الفيديو: مين هي أكاديمية عمار"><span><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#0E0F3B"/></svg></span></button></div>
+<figcaption class="cap">مين هي أكاديمية عمار؟</figcaption>
+</figure>
+</div>
+</section>
+
+<section class="nums" aria-label="أرقامنا">
+<div class="wrap">
+<h2>Comprehensive Basics and Advanced courses that guide you to <em>+700 scores</em></h2>
+<ul>
+<li><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F7931E"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>+1500 questions</li>
+<li><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F7931E"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>+5000 students</li>
+<li><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F7931E"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>+20 Real Exams</li>
+<li><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F7931E"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>+1500 scores</li>
+<li><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F7931E"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>+100 videos</li>
+<li><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F7931E"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>+80 Days daily plan</li>
+</ul>
+</div>
+</section>
+
+<section class="sec" id="choose">
+<div class="wrap">
+<div class="head"><h2>بتجهّز لأنهي امتحان؟</h2><p>اختار كورسك، وهتدخل على صفحته بكل التفاصيل والأسعار والـFree Session.</p></div>
+<div class="pkgs">
+<article class="pkg" id="sat">
+<div class="pkg-top"><span class="pkg-name">SAT <i>&amp; EST</i></span><span class="tag">الدبلومة الأمريكية</span></div>
+<p>English وMath بخطة كاملة، امتحانات حقيقية، ومتابعة أسبوعية مع ولي الأمر.</p>
+<div class="stats">
+<div><b>+1500</b><span>سؤال</span></div><div><b>+20</b><span>Real Exams</span></div><div><b>+100</b><span>فيديو</span></div>
+<div><b>+5000</b><span>طالب اشترك</span></div><div><b>+1500</b><span>أعلى سكور</span></div><div><b>+80</b><span>يوم خطة يومية</span></div>
+</div>
+<ul><li>طلابنا وصلوا لسكورات <span class="ltr">+1500</span></li><li>Real Tests والـVocabulary Game</li><li data-group>المجموعة الجاية قربت تبدأ</li></ul>
+<a class="btn b-orange go" href="/sat/">ادخل على كورسات SAT ←</a>
+</article>
+<article class="pkg ielts" id="ielts">
+<div class="pkg-top"><img src="/ielts/img/logo.png" alt="Ammar IELTS Academy" style="height:54px;width:auto" loading="lazy"><span class="tag">IELTS Academic &amp; General</span></div>
+<p>الـ4 مهارات بخطة لكل واحدة، تصحيح لكل Writing، وSpeaking Mocks مع مدرس.</p>
+<div class="stats">
+<div><b>+1000</b><span>سؤال</span></div><div><b>+10</b><span>Mock Tests</span></div><div><b>+50</b><span>فيديو</span></div>
+<div><b>+1000</b><span>طالب اشترك</span></div><div><b>8.5</b><span>أعلى Band</span></div><div><b>30</b><span>حصة في الكورس</span></div>
+</div>
+<ul><li>طلابنا وصلوا لـBand 8.5 و9.0 في الـListening</li><li>Writing بيتصحح بالـBand Descriptors</li><li>إعادة مجانية لحد ما توصل للـscore</li></ul>
+<a class="btn b-red go" href="/ielts/">ادخل على كورسات IELTS ←</a>
+</article>
+</div>
+</div>
+</section>
+
+<section class="sec navy" id="results">
+<div class="wrap">
+<div class="head"><h2>النتايج بتتكلم — سكرينات حقيقية من طلابنا</h2><p>سكرينات النتايج زي ما الطلاب بعتوها لينا، من غير تعديل.</p></div>
+<div class="shots">
+<figure><img src="/sat/img/score-1440.jpg" alt="نتيجة SAT 1440" loading="lazy" width="280" height="385"><figcaption>SAT · 1440</figcaption></figure>
+<figure><img src="/sat/img/score-1310.jpg" alt="نتيجة SAT 1310" loading="lazy" width="620" height="380"><figcaption>SAT · 1310</figcaption></figure>
+<figure><img src="/ielts/img/score-a.jpg" alt="نتيجة IELTS Band 8.0" loading="lazy" width="700" height="561"><figcaption>IELTS · Band 8.0</figcaption></figure>
+<figure><img src="/ielts/img/score-b.jpg" alt="نتيجة IELTS Band 8.0" loading="lazy" width="700" height="568"><figcaption>IELTS · Band 8.0</figcaption></figure>
+</div>
+</div>
+</section>
+
+<section class="sec" id="reviews">
+<div class="wrap">
+<div class="head"><h2>متصدقناش إحنا… اسمع من طلابنا</h2><p>فيديوهات قصيرة من طلاب SAT وIELTS بعد النتيجة.</p></div>
+<div class="vids">
+<figure><div class="vid"><video src="/sat/video/malak-1510.mp4" poster="/sat/video/malak-1510.jpg" preload="none" playsinline></video><button class="play" type="button" aria-label="شغّل فيديو ملك"><span><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#0E0F3B"/></svg></span></button></div><figcaption class="cap">ملك — 1510 SAT</figcaption></figure>
+<figure><div class="vid"><video src="/sat/video/review-690-english.mp4" poster="/sat/video/review-690-english.jpg" preload="none" playsinline></video><button class="play" type="button" aria-label="شغّل فيديو 690 في الـEnglish"><span><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#0E0F3B"/></svg></span></button></div><figcaption class="cap">690 في الـEnglish — SAT</figcaption></figure>
+<figure><div class="vid"><video src="/sat/video/why-book.mp4" poster="/sat/video/why-book.jpg" preload="none" playsinline></video><button class="play" type="button" aria-label="شغّل فيديو ليه تحجز معانا"><span><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#0E0F3B"/></svg></span></button></div><figcaption class="cap">ليه تحجز معانا؟</figcaption></figure>
+<figure><div class="vid"><video src="/ielts/video/v-about.mp4" poster="/ielts/video/v-about.jpg" preload="none" playsinline></video><button class="play" type="button" aria-label="شغّل فيديو IELTS"><span><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#0E0F3B"/></svg></span></button></div><figcaption class="cap">مين إحنا في الـIELTS</figcaption></figure>
+</div>
+<div class="voice">
+<div class="vid"><video src="/ielts/video/fb-voice.mp4" poster="/ielts/video/fb-voice-poster.jpg" preload="none" playsinline></video><button class="play" type="button" aria-label="شغّل فويس نوت طالب IELTS"><span><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#0E0F3B"/></svg></span></button></div>
+<p>فويس نوت حقيقي من طالب IELTS بعد ما عرف نتيجته.</p>
+</div>
+</div>
+</section>
+
+<section class="sec" id="vocab" style="padding-top:0">
+<div class="wrap">
+<div class="vocab">
+<div class="vocab-txt">
+<span class="pill">مجاناً لأي حد — من غير اشتراك</span>
+<h2><span class="ltr">Vocabulary Game</span>: احفظ أهم كلمات الـSAT وانت بتلعب</h2>
+<p>أهم كلمات الـSAT والـEST في لعبة أسئلة سريعة. كل كلمة بمعناها بالعربي ومرادفاتها ومثال في جملة.</p>
+<div class="row"><a class="btn b-orange" href="/vocabulary/">العب دلوقتي ←</a></div>
+</div>
+<div class="vocab-cards">
+<div><b>499</b><span>كلمة مهمة</span></div>
+<div><b>Free</b><span>من غير اشتراك</span></div>
+<div class="wide"><span style="color:rgba(255,255,255,.75);font-size:15px">مثال</span><b>Surpass</b><span>يتفوّق على / يتجاوز</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="students" id="students">
+<div class="wrap">
+<div><h2>طالب معانا بالفعل؟</h2><p>ادخل على كورساتك والـReal Tests من حسابك.</p></div>
+<a class="btn b-navy" href="/login" data-auth-link>Log in</a>
+</div>
+</section>
+
+<section class="sec final">
+<div class="wrap">
+<h2>أول Free Session عليا — جرّب بنفسك قبل ما تقرّر</h2>
+<div class="row">
+<a class="btn b-orange" href="/sat/#form">SAT Free Session</a>
+<a class="btn b-red" href="/ielts/#form">IELTS Free Session</a>
+<a class="btn b-green" href="https://wa.me/201031937388?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%B9%D8%B1%D9%81%20%D8%AA%D9%81%D8%A7%D8%B5%D9%8A%D9%84%20%D8%A7%D9%84%D9%83%D9%88%D8%B1%D8%B3%D8%A7%D8%AA" target="_blank" rel="noopener" data-contact="whatsapp">واتساب</a>
+<a class="btn b-navy" href="tel:+201080548078" data-contact="call">اتصل: <span class="ltr">01080548078</span></a>
+</div>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="wrap">
+<span>© أكاديمية عمار — SAT · EST · IELTS</span>
+<nav aria-label="روابط"><a href="/privacy-policy">سياسة الخصوصية</a><a href="/about-us">عن الأكاديمية</a><a href="tel:+201080548078" class="ltr">01080548078</a></nav>
+</div>
+</footer>
+</div>
+</template>
+<script>
+(function () {
+  // Only the bare homepage URL gets the new page; every other path is the app.
+  if (!window.aaHome) return;
+  var tpl = document.getElementById("aa-home-tpl");
+  document.body.insertBefore(tpl.content.cloneNode(true), document.body.firstChild);
+  var root = document.getElementById("aa-home");
+
+  // Logged-in students: the app keeps this entry while they are signed in.
+  var signedIn = false;
+  try { signedIn = !!localStorage.getItem("flutter.LocalAuthentication"); } catch (e) {}
+  if (signedIn) {
+    root.querySelectorAll("[data-auth-link]").forEach(function (a) {
+      a.textContent = "كورساتي";
+      a.setAttribute("href", "/profile/courses");
+    });
+  }
+
+  // Mobile menu.
+  var top = document.getElementById("aa-top");
+  var mb = root.querySelector("[data-menu]");
+  mb.addEventListener("click", function () {
+    var open = top.classList.toggle("open");
+    mb.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  root.querySelectorAll("#aa-nav a").forEach(function (a) {
+    a.addEventListener("click", function () { top.classList.remove("open"); mb.setAttribute("aria-expanded", "false"); });
+  });
+
+  // Videos: tap the big button to play; one video at a time.
+  var vids = root.querySelectorAll(".vid video");
+  root.querySelectorAll(".vid .play").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var v = btn.parentNode.querySelector("video");
+      btn.parentNode.classList.add("on");
+      v.controls = true;
+      v.play();
+    });
+  });
+  vids.forEach(function (v) {
+    v.addEventListener("play", function () {
+      v.parentNode.classList.add("on");
+      v.controls = true;
+      vids.forEach(function (o) { if (o !== v) o.pause(); });
+    });
+  });
+
+  // Next SAT group date, from the CRM (same source as /sat).
+  fetch("https://crm.ammar-academy.com/api/public/landing")
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      var g = d && (d.group || d.groupLabel);
+      var el = root.querySelector("[data-group]");
+      if (g && el) el.textContent = "المجموعة الجاية: " + g;
+    })
+    .catch(function () {});
+
+  // Meta Pixel: WhatsApp and call taps count as Contact.
+  root.querySelectorAll("[data-contact]").forEach(function (a) {
+    a.addEventListener("click", function () {
+      if (window.fbq) fbq("track", "Contact", { method: a.getAttribute("data-contact") });
+    });
+  });
+})();
+</script>
+<!-- AA-HOME:END -->
+
     <!-- Plain-HTML summary for crawlers and visitors without JavaScript (AI search bots read this; the app itself needs JS). -->
     <noscript>
       <main dir="rtl" lang="ar" style="font-family:Tahoma,Arial,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;color:#0e0f3b;line-height:1.8">
@@ -951,6 +1335,14 @@
       });
     </script>
 
-    <script src="flutter_bootstrap.js?v=57" async></script>
+    <script>
+      // The app is not needed on the homepage: it only loads on the other paths.
+      if (!window.aaHome) {
+        var aaBoot = document.createElement("script");
+        aaBoot.src = "flutter_bootstrap.js?v=57";
+        aaBoot.async = true;
+        document.body.appendChild(aaBoot);
+      }
+    </script>
   </body>
 </html>
