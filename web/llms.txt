@@ -1,6 +1,6 @@
 # Ammar Academy (أكاديمية عمار)
 
-> Ammar Academy is an online test-prep academy in Egypt for the SAT, EST, ACT and IELTS. It serves American Diploma students (grades 10–12) and their parents, and IELTS candidates, with live Zoom classes, recorded lessons, weekly study plans, full mock tests, weekly progress reports for parents and personal follow-up. Teaching is in Egyptian Arabic and English. Last updated: 2026-11-25.
+> Ammar Academy is an online test-prep academy in Egypt for the SAT, EST, ACT and IELTS. It serves American Diploma students (grades 10–12) and their parents, and IELTS candidates, with live Zoom classes, recorded lessons, weekly study plans, full mock tests, weekly progress reports for parents and personal follow-up. Teaching is in Egyptian Arabic and English. Last updated: 2026-11-26.
 
 - Website: https://ammar-academy.com/
 - Phone: +20 108 054 8078 (01080548078)
@@ -20,6 +20,11 @@
 - [SAT scores 2026](https://ammar-academy.com/sat-score/): how the SAT is scored out of 1600, the passing score cited by Egyptian universities, what counts as a good score, and upcoming test dates.
 - [How to choose an SAT course in Egypt](https://ammar-academy.com/sat-course-egypt/): eight questions to ask any SAT course before paying, plus Ammar Academy's course details and prices.
 - [IELTS band scores explained](https://ammar-academy.com/ielts-band-score/): what each band means, how the overall band is rounded, and how many correct answers give each band in Listening and Reading.
+
+## Blog (Arabic)
+
+- [Ammar Academy blog](https://ammar-academy.com/blog/): articles on SAT, EST, ACT and IELTS dates, scores and preparation for students and parents in Egypt.
+- [SAT test dates 2026–2027 in Egypt](https://ammar-academy.com/blog/sat-test-dates-2027/): upcoming SAT dates (6 March, 1 May and 5 June 2027), registration and late deadlines, score release dates, and fees from Egypt ($68 registration + $43 international fee).
 
 ## Free tools
 
