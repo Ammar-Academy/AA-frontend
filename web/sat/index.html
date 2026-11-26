@@ -111,7 +111,7 @@ h2{font-size:clamp(28px,4vw,42px);font-weight:900;color:var(--navy)}
 .frame .score{font-size:42px;font-weight:900;color:var(--navy);line-height:1}
 .frame .tag{background:var(--orange-tint);color:#8A4A00;font-size:14px;font-weight:800;border-radius:999px;padding:6px 12px}
 .frame .shot{background:#F3F4F8;border-radius:14px;height:300px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.frame .shot img{max-height:300px;width:auto}
+.frame .shot img{max-height:300px;max-width:100%;width:auto;height:auto;object-fit:contain}
 .wa-frame{margin:0;background:#fff;border-radius:22px;padding:10px;box-shadow:0 14px 36px rgba(14,15,59,.14);display:flex;flex-direction:column;gap:6px}
 .wa-frame figcaption{display:flex;align-items:center;gap:8px;padding:4px 8px;color:var(--green);font-size:15px;font-weight:800}
 .wa-frame figcaption span:last-child{color:var(--muted);font-weight:600}
@@ -587,10 +587,9 @@ footer.site a{color:rgba(255,255,255,.75)}
   <div class="wrap">
     <div class="head"><span class="kicker">النتايج بتتكلم</span><h2>الأرقام مش بتكدب: نتايج حقيقية من تقارير الطلاب الأصلية</h2><p class="lead">الدرجة الكلية والإنجليزي والماث زي ما ظهرت للطالب بالظبط — من غير أي تعديل.</p></div>
     <div class="grid">
+      <figure class="frame"><figcaption class="cap"><span class="score" dir="ltr">1570</span><span class="tag">اتحسّن 430 درجة</span></figcaption><div class="shot"><img src="img/score-1570.jpg" alt="تقرير SAT الأصلي: 1570 — قراءة وكتابة 780، رياضيات 790" width="995" height="540" loading="lazy"></div></figure>
+      <figure class="frame"><figcaption class="cap"><span class="score" dir="ltr">1510</span><span class="tag">770 في الـMath</span></figcaption><div class="shot"><img src="img/score-1510.jpg" alt="تقرير SAT الأصلي: 1510 — قراءة وكتابة 740، رياضيات 770" width="634" height="335" loading="lazy"></div></figure>
       <figure class="frame"><figcaption class="cap"><span class="score" dir="ltr">1440</span><span class="tag">أعلى من 95% من الطلاب</span></figcaption><div class="shot"><img src="img/score-1440.jpg" alt="تقرير SAT الأصلي: 1440 — قراءة وكتابة 710 وماث 730" width="280" height="385" loading="lazy"></div></figure>
-      <figure class="frame"><figcaption class="cap"><span class="score" dir="ltr">1310</span><span class="tag">اتحسّن 220 درجة</span></figcaption><div class="shot"><img src="img/score-1310.jpg" alt="تقرير SAT الأصلي: 1310 — قراءة وكتابة 640 وماث 670" width="620" height="380" loading="lazy"></div></figure>
-      <figure class="frame"><figcaption class="cap"><span class="score" dir="ltr">1290</span><span class="tag">أعلى من 84% من الطلاب</span></figcaption><div class="shot"><img src="img/score-1290.jpg" alt="تقرير SAT الأصلي: 1290 — قراءة وكتابة 620 وماث 670" width="600" height="870" loading="lazy"></div></figure>
-      <figure class="frame"><figcaption class="cap"><span class="score" dir="ltr">1260</span><span class="tag">امتحان أغسطس 2026</span></figcaption><div class="shot"><img src="img/score-1260.jpg" alt="تقرير SAT الأصلي: 1260 — قراءة وكتابة 610 وماث 650" width="800" height="440" loading="lazy"></div></figure>
     </div>
     <div class="btn-row" style="margin-top:28px"><a class="btn big" href="#form" data-cta="results">عايز ابني يحقق نفس النتيجة — استفيد بحصة مجانية</a></div>
   </div>
