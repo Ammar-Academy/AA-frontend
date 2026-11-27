@@ -849,7 +849,7 @@ footer.site .wordmark b{color:#fff}
     fetch(CRM, {
       method: "POST", mode: "cors", headers: { "content-type": "application/json" },
       body: JSON.stringify({ name: get("name"), phone: get("phone"), role: "student", answers: answers,
-        website: get("website"), elapsedMs: Date.now() - opened, page: "ammar-academy.com/ielts", tracking: t })
+        website: get("website"), elapsedMs: Math.min(Date.now() - opened, 3600000), page: "ammar-academy.com/ielts", tracking: t })
     }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { return { status: r.status, body: b }; }); })
       .then(function (r) {
         if (r.status === 200 || r.status === 429) {

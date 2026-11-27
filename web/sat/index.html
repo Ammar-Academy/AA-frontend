@@ -915,7 +915,7 @@ footer.site a{color:rgba(255,255,255,.75)}
     fetch(CRM, {
       method: "POST", mode: "cors", headers: { "content-type": "application/json" },
       body: JSON.stringify({ name: get("name"), phone: get("phone"), role: get("role"), grade: get("grade"), diploma: get("diploma"), course: get("course"),
-        website: get("website"), elapsedMs: Date.now() - opened, page: "ammar-academy.com/sat", tracking: t })
+        website: get("website"), elapsedMs: Math.min(Date.now() - opened, 3600000), page: "ammar-academy.com/sat", tracking: t })
     }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { return { status: r.status, body: b }; }); })
       .then(function (r) {
         if (r.status === 200 || r.status === 429) {
