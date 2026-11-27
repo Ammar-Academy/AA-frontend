@@ -28,6 +28,9 @@ h1,h2,h3,p{margin:0}a{color:var(--navy)}
 .home{max-width:980px;margin:0 auto;padding:28px 18px 60px;display:grid;gap:26px}
 .home header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.home h1{font-size:28px}.home h2{font-size:19px}
 .list{display:grid;gap:12px}.row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;gap:12px 20px;align-items:center;flex-wrap:wrap}.row>div:first-child{flex:1;min-width:210px}.row p{color:var(--muted);font-size:14px}.row .acts{display:flex;gap:8px;flex-wrap:wrap}
+.pick{flex-basis:100%;display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}.pick p{color:var(--muted);font-size:14px}
+.skills{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.skill{display:grid;gap:2px;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px}.skill:hover{border-color:var(--navy)}.skill:disabled{opacity:.5}.skill span{color:var(--muted);font-size:14px}.skill .tag{color:var(--orange);font-weight:600}
 .empty{color:var(--muted)}.score{font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
 /* listening */
 .player{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:9px 14px;background:#fff;border-bottom:1px solid var(--line)}.player label{display:inline-flex;gap:6px;align-items:center;font-size:14px}.player input[type=range]{accent-color:var(--navy)}.player .seek{flex:1 1 180px;min-width:120px}.player .vol{width:90px}.player .time{font-variant-numeric:tabular-nums;white-space:nowrap}.player select{border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:#fff}.player progress{flex:1 1 160px;height:10px;accent-color:var(--navy)}
@@ -199,21 +202,37 @@ async function home() {
     }
     return;
   }
-  function tests(skill) {
-    var rows = [];
-    data.exams.forEach(function (x) {
-      x.skills.filter(function (k) { return k.skill === skill; }).forEach(function (k) {
-        rows.push(h("div", { class: "row" },
-          h("div", {}, h("b", {}, x.title), h("p", {}, (skill === "reading" || skill === "writing" ? VARIANT[x.variant] + ", " : "") + many(k.question_count, skill === "writing" ? "task" : "question"))),
-          h("div", { class: "acts" }, x.modes.map(function (m, i) {
-            return h("button", { class: "btn" + (i === 0 ? " main" : ""), onclick: function (e) { begin(x, k, m, e.currentTarget); } },
-              (k.open[m] ? "Continue " + MODE[m].toLowerCase() : MODE[m] + (m === "simulation" || x.time_practice ? " (" + k.minutes + " min)" : "")));
-          }))));
-      });
+  // One card per test. Practice or Simulation opens the choice of section.
+  function card(x) {
+    var pick = h("div", { class: "pick", hidden: true }), chosen = null, buttons;
+    function timed(m) { return m === "simulation" || x.time_practice; }
+    function about(k, m) {
+      return many(k.question_count, k.skill === "writing" ? "task" : "question") + (timed(m) ? ", " + k.minutes + " min" : "");
+    }
+    function choose(m, button) {
+      var again = chosen === m;
+      chosen = again ? null : m;
+      buttons.forEach(function (b) { b.setAttribute("aria-expanded", String(!again && b === button)); });
+      pick.hidden = again;
+      if (again) return;
+      pick.replaceChildren(
+        h("p", {}, m === "simulation" ? "Choose a section. It is timed, as on the exam day." : "Choose a section to practise."),
+        h("div", { class: "skills" }, x.skills.map(function (k) {
+          return h("button", { class: "skill", onclick: function (e) { begin(x, k, m, e.currentTarget); } },
+            h("b", {}, SKILL[k.skill]), h("span", {}, about(k, m)), k.open[m] ? h("span", { class: "tag" }, "Continue") : null);
+        })));
+      pick.querySelector("button").focus();
+    }
+    buttons = x.modes.map(function (m, i) {
+      var going = x.skills.some(function (k) { return k.open[m]; });
+      return h("button", { class: "btn" + (i === 0 ? " main" : ""), "aria-expanded": "false", onclick: function (e) { choose(m, e.currentTarget); } },
+        MODE[m] + (going ? " (in progress)" : ""));
     });
-    return rows.length ? h("section", { class: "list" }, h("h2", {}, SKILL[skill]), rows) : null;
+    return h("div", { class: "row" },
+      h("div", {}, h("b", {}, x.title), h("p", {}, VARIANT[x.variant] + ": " + x.skills.map(function (k) { return SKILL[k.skill]; }).join(", "))),
+      h("div", { class: "acts" }, buttons), pick);
   }
-  var lists = Object.keys(SKILL).map(tests).filter(Boolean);
+  var lists = data.exams.length ? [h("section", { class: "list" }, h("h2", {}, "Tests"), data.exams.map(card))] : [];
   var results = data.results.map(function (r) {
     return h("div", { class: "row" },
       h("div", {}, h("b", {}, r.title), h("p", {}, SKILL[r.skill] + ", " + MODE[r.mode].toLowerCase() + ", " + new Date(r.submitted_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }))),
