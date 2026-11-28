@@ -583,7 +583,7 @@
     "cancel": "Cancel",
     "time_left": "Time left {time}",
     "result_title": "Your result",
-    "score": "{score}/{total} correct ({percent}%)",
+    "score": "{score}/{total} points ({percent}%)",
     "submitted_late": "Submitted late",
     "submitted_on_time": "Submitted on time",
     "submitted_by_time": "Time ran out, so your saved answers were submitted.",
@@ -592,11 +592,15 @@
     "your_answer": "Your answer: {answer}",
     "correct_answer": "Correct answer: {answer}",
     "not_answered": "Not answered",
-    "answers_hidden": "The correct answers appear when you have no attempts left.",
+    "answers_hidden": "The correct answers and feedback appear when you have no attempts left.",
     "past_attempts": "Your attempts",
     "attempt_n": "Attempt {n}",
     "view_result": "View",
     "error": "Something went wrong. Please try again.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "answers_hidden_deadline": "The correct answers and feedback appear after the deadline.",
+    "points_earned": "{earned}/{points} points",
+    "worth_points": "Points: {points}",
+    "feedback": "Feedback"
   }
 }

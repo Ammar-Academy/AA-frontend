@@ -584,7 +584,7 @@
     "cancel": "إلغاء",
     "time_left": "الوقت المتبقي {time}",
     "result_title": "نتيجتك",
-    "score": "{score}/{total} صحيحة ({percent}%)",
+    "score": "{score}/{total} درجة ({percent}%)",
     "submitted_late": "سُلِّم متأخرًا",
     "submitted_on_time": "سُلِّم في الموعد",
     "submitted_by_time": "انتهى الوقت، فتم تسليم إجاباتك المحفوظة.",
@@ -593,11 +593,15 @@
     "your_answer": "إجابتك: {answer}",
     "correct_answer": "الإجابة الصحيحة: {answer}",
     "not_answered": "لم تتم الإجابة",
-    "answers_hidden": "تظهر الإجابات الصحيحة عندما لا تتبقى لك محاولات.",
+    "answers_hidden": "تظهر الإجابات الصحيحة والملاحظات عندما لا تتبقى لك محاولات.",
     "past_attempts": "محاولاتك",
     "attempt_n": "المحاولة {n}",
     "view_result": "عرض",
     "error": "حدث خطأ. حاول مرة أخرى.",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "answers_hidden_deadline": "تظهر الإجابات الصحيحة والملاحظات بعد انتهاء الموعد النهائي.",
+    "points_earned": "{earned}/{points} درجة",
+    "worth_points": "الدرجة: {points}",
+    "feedback": "ملاحظة المعلم"
   }
 }
