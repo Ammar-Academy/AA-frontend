@@ -602,5 +602,14 @@
     "points_earned": "{earned}/{points} points",
     "worth_points": "Points: {points}",
     "feedback": "Feedback"
+  },
+  "assignment_progress": {
+    "title": "Assignments",
+    "none": "No assignments received yet, so this is a full mark (0 of 0).",
+    "on_time": "Done on time",
+    "late": "Done late",
+    "missed": "Not done",
+    "open": "Not due yet",
+    "average": "Average score: {percent}%"
   }
 }
