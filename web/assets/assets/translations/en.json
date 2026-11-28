@@ -83,7 +83,10 @@
     "see_all": "See all",
     "web_push_title": "Get notifications in this browser",
     "web_push_enable": "Enable",
-    "web_push_blocked": "Notifications are blocked for this site. Allow them in your browser's site settings to get alerts."
+    "web_push_blocked": "Notifications are blocked for this site. Allow them in your browser's site settings to get alerts.",
+    "web_push_invite_title": "Turn on notifications",
+    "web_push_invite_body": "Get an alert in this browser when a new assignment arrives or your work is marked.",
+    "web_push_not_now": "Not now"
   },
   "my_courses": {
     "continue": "Continue",
