@@ -611,5 +611,19 @@
     "missed": "Not done",
     "open": "Not due yet",
     "average": "Average score: {percent}%"
+  },
+  "assignment_plans": {
+    "title": "My plans",
+    "week": "Week {week}",
+    "day": "Day {day}",
+    "days_done": "{done}/{total} days",
+    "continue": "Next: Week {week}, Day {day}",
+    "finished": "Plan finished. Well done!",
+    "waiting": "The next day is being prepared.",
+    "empty": "This plan has no days yet.",
+    "state_open": "Open",
+    "state_missed": "Not done, deadline passed",
+    "state_not_ready": "Coming soon",
+    "state_locked": "Opens after the day before"
   }
 }

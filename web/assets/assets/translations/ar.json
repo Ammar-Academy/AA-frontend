@@ -612,5 +612,19 @@
     "missed": "لم يتم",
     "open": "لم يحن موعده",
     "average": "متوسط الدرجة: {percent}%"
+  },
+  "assignment_plans": {
+    "title": "خططي",
+    "week": "الأسبوع {week}",
+    "day": "اليوم {day}",
+    "days_done": "{done}/{total} أيام",
+    "continue": "التالي: الأسبوع {week}، اليوم {day}",
+    "finished": "خلّصت الخطة. أحسنت!",
+    "waiting": "اليوم التالي بيتجهّز.",
+    "empty": "الخطة دي لسه مفيهاش أيام.",
+    "state_open": "مفتوح",
+    "state_missed": "لم يتم، الموعد فات",
+    "state_not_ready": "قريبًا",
+    "state_locked": "يتفتح بعد اليوم اللي قبله"
   }
 }
