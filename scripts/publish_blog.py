@@ -125,7 +125,8 @@ def update_llms(posts: list[dict]) -> list[str]:
 def main() -> None:
     data = fetch()
     check(data)
-    posts = sorted(data["posts"], key=lambda p: (p["published_on"], p["slug"]))
+    # Keep the API order (published_on, then created_at); sorted() is stable.
+    posts = sorted(data["posts"], key=lambda p: p["published_on"])
     changes = write_pages(data) + update_sitemap(posts) + update_llms(posts)
     print("\n".join(changes) if changes else "The blog is up to date.")
 
