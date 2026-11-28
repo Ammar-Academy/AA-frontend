@@ -1,0 +1,54 @@
+name: Release backend
+
+# Manual only. Releases an AA-backend image that AA-backend's
+# "Build backend image" workflow already built (ghcr.io, tag sha-<commit>),
+# through the same locked-down deploy key the website deploy uses. On the
+# droplet ammar-deploy runs ammar-release (AA-backend scripts/server/release.sh):
+# database backup, pull, migrate, switch, health check, automatic rollback.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Full AA-backend commit SHA to release
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SHA: ${{ inputs.sha }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+    steps:
+      - name: Check the SHA
+        shell: bash
+        run: '[[ "$SHA" =~ ^[0-9a-f]{40}$ ]]'
+
+      - name: Set up the SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Release over SSH
+        run: |
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" "backend-release $SHA"
+
+      - name: Check the API
+        run: |
+          curl -fsS --retry 10 --retry-delay 3 --retry-all-errors \
+            "https://ammar-academy.com/api/packages/?ts=$(date +%s)" > /dev/null
