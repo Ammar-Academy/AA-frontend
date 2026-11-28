@@ -625,6 +625,7 @@
     "state_open": "مفتوح",
     "state_missed": "لم يتم، الموعد فات",
     "state_not_ready": "قريبًا",
-    "state_locked": "يتفتح بعد اليوم اللي قبله"
+    "state_locked": "يتفتح بعد اليوم اللي قبله",
+    "watch_explanation": "شاهد شرح الواجب"
   }
 }

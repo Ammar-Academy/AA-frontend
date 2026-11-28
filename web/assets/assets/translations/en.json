@@ -624,6 +624,7 @@
     "state_open": "Open",
     "state_missed": "Not done, deadline passed",
     "state_not_ready": "Coming soon",
-    "state_locked": "Opens after the day before"
+    "state_locked": "Opens after the day before",
+    "watch_explanation": "Watch the explanation"
   }
 }
